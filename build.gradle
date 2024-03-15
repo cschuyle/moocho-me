@@ -1,9 +1,12 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.9.22'
+    id 'application'
 }
 
 group = 'com.dragnon.fortxi'
 version = '1.0-SNAPSHOT'
+
+mainClassName = 'com.dragnon.fortxi.MainKt'
 
 repositories {
     mavenCentral()
