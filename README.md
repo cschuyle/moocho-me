@@ -11,6 +11,7 @@ Actually it's a minimal starter webapp backed by a relational database, using th
 
 **Frontend:**
 - React
+- Typescript
 
 **Build system, project structure:**
 - Gradle
