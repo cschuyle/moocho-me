@@ -3,6 +3,7 @@ import axios from 'axios';
 
 interface Item {
     name: string;
+    type: string;
 }
 
 interface ItemListProps {
@@ -10,9 +11,9 @@ interface ItemListProps {
     triggerItemsRefresh: () => void;
 }
 
-const createItem = async (name: string) => {
+const createItem = async (name: string, type: string) => {
     try {
-        const {data: response} = await axios.post('/items', {name: name});
+        const {data: response} = await axios.post('/items', {name: name, type: type});
         return response;
     } catch (error) {
         console.log(error);
@@ -21,15 +22,22 @@ const createItem = async (name: string) => {
 
 const ItemList = (props: ItemListProps) => {
     const [newItemName, setNewItemName]: [string, any] = useState('');
+    const [newItemType, setNewItemType]: [string, any] = useState('');
 
     const handleItemNameChanged = (input: React.ChangeEvent<HTMLInputElement>) => {
         input.preventDefault();
         setNewItemName(input.target.value);
     };
 
+    const handleItemTypeChanged = (input: React.ChangeEvent<HTMLInputElement>) => {
+        input.preventDefault();
+        setNewItemType(input.target.value);
+    };
+
     function createNewItemAndRefreshList() {
-        createItem(newItemName).then(() => {
+        createItem(newItemName, newItemType).then(() => {
             setNewItemName('');
+            setNewItemType('');
             props.triggerItemsRefresh();
         });
     }
@@ -52,12 +60,15 @@ const ItemList = (props: ItemListProps) => {
 
     return (
         <div className="ItemList">
-
             <div>
                 <input className="input" type="text" value={newItemName}
                        placeholder="Item name"
                        onChange={handleItemNameChanged}
                        onKeyDown={handleKeyDown}
+                />
+                <input className="input" type="text" value={newItemType}
+                       placeholder="Item type"
+                       onChange={handleItemTypeChanged}
                 />
                 <button className="btn"
                         onClick={handleAddNewItem}>Add Item
@@ -71,6 +82,7 @@ const ItemList = (props: ItemListProps) => {
                 {props.items.map((item) => (
                     <tr className="item" key={item.name}>
                         <td>{item.name}</td>
+                        <td>{item.type}</td>
                     </tr>
                 ))}
                 </tbody>

@@ -6,5 +6,6 @@ import jakarta.persistence.Id
 @Entity
 data class Item(
     @Id
-    var name: String? = null
+    var name: String? = null,
+    var type: String? = null
 )

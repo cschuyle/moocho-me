@@ -3,10 +3,7 @@ import axios from 'axios';
 
 import './App.css';
 import ItemList from './ItemList';
-
-interface Item {
-    name: string;
-}
+import Item from './Item';
 
 const fetchItems = async () => {
     try {

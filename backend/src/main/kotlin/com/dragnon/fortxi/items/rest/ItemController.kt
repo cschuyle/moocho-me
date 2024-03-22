@@ -23,4 +23,24 @@ class ItemController(val repository: ItemRepository) {
         Logger.getAnonymousLogger().info("Saving " + item.name)
         repository.save(item)
     }
+
+    @GetMapping("/menuitems")
+    fun readMenu(): HashMap<String, ArrayList<MenuItem>> {
+        val items = repository.findAll()
+
+        var menuItems = HashMap<String, ArrayList<MenuItem>>()
+
+        for (item in items) {
+            val itemType = item.type!!
+            if (!menuItems.contains(itemType)) {
+                menuItems[itemType] = ArrayList()
+            }
+            val itemList = menuItems[itemType]!!
+            itemList.add(MenuItem(item.name))
+        }
+
+//        val menuCategoryList = ArrayList<MenuCategory>()
+
+        return menuItems
+    }
 }
