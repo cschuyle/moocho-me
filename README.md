@@ -12,7 +12,7 @@ Actually it's a minimal starter webapp backed by a relational database, using th
 **Frontend:**
 - React
 
-**Build system, project structure:** 
+**Build system, project structure:**
 - Gradle
   - Kotlin DSL (not Groovy).
   - Multi-module project.
@@ -31,12 +31,14 @@ Using two different terminal windows:
 
 Start the backend. Changes to the backend code require a re-compile and restart of the server.
 ```shell
+chmod 0755 ./gradlew # Only necessary the first time, and only if you somehow got a copy without the executable bit set
 ./gradlew bootRun
 ```
 
 Start the frontend. Changes to the frontend code will automatically refresh.
 ```shell
 cd frontend
+yarn install # Only necessary the first time
 yarn start
 ```
 
