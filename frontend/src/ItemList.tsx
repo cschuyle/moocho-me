@@ -30,7 +30,6 @@ const ItemList = (props: ItemListProps) => {
     function createNewItemAndRefreshList() {
         createItem(newItemName).then(() => {
             setNewItemName('');
-            console.log("Trigger refresh because of " + newItemName)
             props.triggerItemsRefresh();
         });
     }
@@ -46,9 +45,7 @@ const ItemList = (props: ItemListProps) => {
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        console.log("Ooooh you pressed " + e.key)
         if (e.key === "Enter") {
-            console.log("Setting new item")
             createNewItemAndRefreshList();
         }
     };

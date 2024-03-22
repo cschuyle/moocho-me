@@ -11,7 +11,6 @@ interface Item {
 const fetchItems = async () => {
     try {
         const {data: response} = await axios.get("/items");
-        console.log("Items: " + response)
         return response;
     } catch (error) {
         console.log(error);
