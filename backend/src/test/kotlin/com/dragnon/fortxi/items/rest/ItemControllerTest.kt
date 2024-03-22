@@ -32,7 +32,7 @@ class ItemControllerTest {
             .getForEntity("/items", List::class.java)
         assertThat(getResponse.statusCode).isEqualTo(HttpStatus.OK)
 
-        val documentContext: DocumentContext = JsonPath.parse(getResponse.body as List<Item>)
+        val documentContext: DocumentContext = JsonPath.parse(getResponse.body as List<*>)
         val names: JSONArray = documentContext.read("\$..name")
         assertThat(names).contains(randomName)
     }
