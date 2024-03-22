@@ -27,13 +27,30 @@ const ItemList = (props: ItemListProps) => {
         setNewItemName(input.target.value);
     };
 
-    const handleAddNewItem = (e: React.ChangeEvent<any>) => {
-        e.preventDefault();
+    function createNewItemAndRefreshList() {
         createItem(newItemName).then(() => {
             setNewItemName('');
             console.log("Trigger refresh because of " + newItemName)
             props.triggerItemsRefresh();
         });
+    }
+
+    const handleAddNewItem = (e: React.ChangeEvent<any>) => {
+        e.preventDefault();
+        createNewItemAndRefreshList();
+    };
+
+    // TODO: Revisit to see if this apparent bug (or lack of a feature?) in React/Typescript is fixed. This is a hack that I found on: https://stackoverflow.com/questions/69284145/typescript-issues-with-keyboardevent-event-type-and-addeventlistener
+    interface KeyboardEvent {
+        key: string;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        console.log("Ooooh you pressed " + e.key)
+        if (e.key === "Enter") {
+            console.log("Setting new item")
+            createNewItemAndRefreshList();
+        }
     };
 
     return (
@@ -41,7 +58,9 @@ const ItemList = (props: ItemListProps) => {
 
             <div>
                 <input className="input" type="text" value={newItemName}
-                       onChange={handleItemNameChanged} placeholder="Item name"
+                       placeholder="Item name"
+                       onChange={handleItemNameChanged}
+                       onKeyDown={handleKeyDown}
                 />
                 <button className="btn"
                         onClick={handleAddNewItem}>Add Item
