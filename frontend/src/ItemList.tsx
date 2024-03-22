@@ -1,56 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
+import axios from 'axios';
 
-type Item = {
+interface Item {
     name: string;
 }
-const ItemList = () => {
+
+interface ItemListProps {
+    items: Array<Item>;
+    triggerItemsRefresh: () => void;
+}
+
+const createItem = async (name: string) => {
+    try {
+        const {data: response} = await axios.post('/items', {name: name});
+        return response;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const ItemList = (props: ItemListProps) => {
     const [newItemName, setNewItemName]: [string, any] = useState('');
-    const [items, setItems] : [Item[], any] = useState([]);
-
-    const ReadItems = () => {
-
-        useEffect(() => {
-            fetch('/items')
-                .then((res) => {
-                    return res.json();
-                })
-                .then((data) => {
-                    console.log(data);
-                    setItems(data);
-                });
-        }, []);
-    };
 
     const handleItemNameChanged = (input: React.ChangeEvent<HTMLInputElement>) => {
+        input.preventDefault();
         setNewItemName(input.target.value);
     };
 
-    const handleAddNewItem = (_: React.ChangeEvent<any>) => {
-        setItems([...items, {
-            name: newItemName
-        }]);
-        setNewItemName('');
+    const handleAddNewItem = (e: React.ChangeEvent<any>) => {
+        e.preventDefault();
+        createItem(newItemName).then(() => {
+            setNewItemName('');
+            console.log("Trigger refresh because of " + newItemName)
+            props.triggerItemsRefresh();
+        });
     };
-
-    ReadItems();
 
     return (
         <div className="ItemList">
 
             <div>
-                <button className="btn"
-                        onClick={handleAddNewItem}>Add Item</button>
                 <input className="input" type="text" value={newItemName}
-                       onChange={handleItemNameChanged} placeholder="Item name" />
+                       onChange={handleItemNameChanged} placeholder="Item name"
+                />
+                <button className="btn"
+                        onClick={handleAddNewItem}>Add Item
+                </button>
             </div>
 
             <h2>All Items</h2>
 
             <table>
                 <tbody>
-                { items.map((item) => (
+                {props.items.map((item) => (
                     <tr className="item" key={item.name}>
-                    <td>Item {item.name}</td>
+                        <td>{item.name}</td>
                     </tr>
                 ))}
                 </tbody>

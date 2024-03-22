@@ -23,7 +23,7 @@ Actually it's a minimal starter webapp backed by a relational database, using th
   Should run on any reasonably recent Linux-ish system.
 - Java v17
 - Node.js v21.7.1
-- yarn v1.22.22, but you could use npm if you prefer.
+- yarn v1.22.22
 
 ### Running
 
