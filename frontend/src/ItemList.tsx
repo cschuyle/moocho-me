@@ -6,6 +6,19 @@ interface Item {
     type: string;
 }
 
+type MenuItems =
+    Map<string,Array<string>>
+
+
+// interface MenuCategory {
+//     type: string
+//     items: Array<Item>
+// }
+//
+// interface WantThisFromServer {
+//     categories: Array<MenuCategory>
+// }
+
 interface ItemListProps {
     items: Array<Item>;
     triggerItemsRefresh: () => void;
@@ -87,6 +100,12 @@ const ItemList = (props: ItemListProps) => {
                 ))}
                 </tbody>
             </table>
+            {/*{*/}
+            {/*<h2>{itemType}</h2>*/}
+            {/*<ul>*/}
+            {/*    <li>{itemName}</li>*/}
+            {/*</ul>*/}
+            {/*}*/}
         </div>
     );
 };

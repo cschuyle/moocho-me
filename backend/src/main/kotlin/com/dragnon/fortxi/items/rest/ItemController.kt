@@ -28,7 +28,7 @@ class ItemController(val repository: ItemRepository) {
     fun readMenu(): HashMap<String, ArrayList<MenuItem>> {
         val items = repository.findAll()
 
-        var menuItems = HashMap<String, ArrayList<MenuItem>>()
+        val menuItems = HashMap<String, ArrayList<MenuItem>>()
 
         for (item in items) {
             val itemType = item.type!!
