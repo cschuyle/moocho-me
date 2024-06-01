@@ -1,31 +1,14 @@
-# Items
+# Moocho Me
 
-This is **Items**. It's whatever you want it to be!
+**Moocho Me** is a mess O data with some ability to browse it.
 
-Actually it's a minimal starter webapp backed by a relational database, using the following stack:
+### Setup
 
-**Backend:**
-- Spring Boot as the kitchen sink (mostly web backend and Dependency Injection) framework.
-- Kotlin as the backend language.
-- Database-agnostic, but using H2 embedded in-memory database as a minimal implementation.
-
-**Frontend:**
-- React
-- Typescript
-
-**Build system, project structure:**
-- Gradle
-  - Kotlin DSL (not Groovy).
-  - Multi-module project.
-- I used <https://github.com/arnaud-deprez/spring-boot-react-sample> as a starting point to integrate React and Spring Boot in the same project.
-
-### Requirements
-- Tested on MacOS Monterey 12.7.4 (Intel Xeon E5 (2013)).
-  Should run on any reasonably recent Linux-ish system.
-- Java v17
+- Java 21
 - Node.js v21.7.1
 - yarn v1.22.22
 
+Copy .envrc-template
 ### Running
 
 Using two different terminal windows:
@@ -43,9 +26,9 @@ yarn install # Only necessary the first time
 yarn start
 ```
 
-To use the webapp UI, direct your browser to <http://localhost:3000>.
+To use the webapp UI, direct your browser to <http://localhost:3000/>.
 
-You can also hit the REST API directly at <http://localhost:8080/items>.
+You can also hit the REST API directly at <http://localhost:8080/>.
 
 ### Testing
 

@@ -1,0 +1,20 @@
+# Set to false to disable Spring Security (OAuth2)
+# export ENABLE_SECURITY=false
+
+export AWS_ACCESS_KEY='...'
+export AWS_REGION='us-west-2'
+export AWS_SECRET_KEY='...'
+
+# Currently the DB is a heroku PostgreSQL addon - log in and look for the creds
+host='...'
+database='...'
+user='...'
+port=5432
+password='...'
+
+export SPRING_DATASOURCE_URL="jdbc:postgresql://$host/$database"
+export SPRING_DATASOURCE_USERNAME="$user"
+export SPRING_DATASOURCE_PASSWORD="$password"
+
+# This is the DB URI - not for Spring, but for other stuff
+export URI="postgres://$user:$password@host:$port/$database"

@@ -15,6 +15,8 @@ build/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+### Exclude the Intellij project metadata
+.idea/**
 
 ### Eclipse ###
 .apt_generated
@@ -41,9 +43,11 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-### Exclude the Intellij project metadata
-.idea/**
 
 ## Emacs
 *~
 \#*#
+
+# direnv
+.envrc
+
