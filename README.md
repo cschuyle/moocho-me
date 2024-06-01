@@ -8,7 +8,10 @@
 - Node.js v21.7.1
 - yarn v1.22.22
 
-Copy .envrc-template
+If you use `direnv`, copy `envrc-template` to `.envrc` and fill in the blanks.
+
+If not using `direnv`, you can just fill in the blanks, copy the file to whatever you want, and source it.
+
 ### Running
 
 Using two different terminal windows:
