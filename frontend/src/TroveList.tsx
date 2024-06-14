@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEventHandler, useState } from 'react';
 import TroveSummary from "./Trove";
 import axios from 'axios';
 
@@ -12,20 +12,27 @@ interface TroveListProps {
 const TroveList = (props: TroveListProps) => {
     const [troveFilter, setTroveFilter]: [string, any] = useState('');
     const [filteredTroves, setFilteredTroves]: [TroveSummary[], any] = useState([]);
+    const [selectedTroves, setSelectedTroves]: [Set<string>, any] = useState(new Set<string>);
+
+    React.useEffect(() => {
+        setFilteredTroves(props.troves);
+    }, [props]);
+
+    // TROVE FILTER (textbox)
 
     const handleTroveFilterChanged = (input: React.ChangeEvent<HTMLInputElement>) => {
         // console.log("filter changed to " + input.target.value)
         input.preventDefault();
         setTroveFilter(input.target.value);
         // console.log("handled '" + input.target.value + "' - " + (typeof input.target.value))
-        if(input.target.value === "") {
+        if (input.target.value === "") {
             filterTroveList(input.target.value)
         }
     };
 
     function filterTroveList(theFilter: string) {
-        
-        if(theFilter === "") {
+
+        if (theFilter === "") {
             // console.log("it's empty!")
             setFilteredTroves(props.troves)
             return
@@ -53,15 +60,35 @@ const TroveList = (props: TroveListProps) => {
         // console.log("pressed " + e.key)
     };
 
+    // Nothing to do on the backend for this form
     const onFormSubmit = (e: any) => {
         e.preventDefault()
         e.stopPropagation();
-      };
+    };
 
-    React.useEffect(() => {
-        setFilteredTroves(props.troves);
-    }, [props]);
 
+    // TROVE SELECTION (checckboxes)
+
+    const isTroveSelected = (troveId: string) => {
+        return troveId in selectedTroves
+    }
+
+    const handleTroveSelectionChanged = (e: any, troveId: string) => {
+        const wasSelected = isTroveSelected(troveId)
+        console.log("Will change troveId " + troveId + " to " + !wasSelected)
+        const newSelectedTroves = new Set(selectedTroves)
+        // console.log(`old ${selectedTroves} new ${newSelectedTroves}`)
+        if (wasSelected) {
+            newSelectedTroves.delete(troveId);
+        } else {
+            newSelectedTroves.add(troveId)
+        }
+        setSelectedTroves(newSelectedTroves)
+        // console.log("Did change troveId " + troveId + " to " + isTroveSelected(troveId))
+    }
+
+    // THE MEAT
+    
     return (
         <div className="TroveList">
             <div>
@@ -82,7 +109,14 @@ const TroveList = (props: TroveListProps) => {
             <table>
                 <tbody>
                     {filteredTroves.map((trove) => (
-                        <tr className="trove" key={trove.id}>
+                        <tr className="trove">
+                            <Form.Check
+                                key={trove.id}
+                                checked={isTroveSelected(trove.id)}
+                                onChange={(e: any) => handleTroveSelectionChanged(e, trove.id)}
+                            >
+                            </Form.Check>
+
                             <td>{trove.name}</td>
                         </tr>
                     ))}
