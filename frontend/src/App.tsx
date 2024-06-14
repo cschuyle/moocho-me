@@ -1,41 +1,70 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+
+import Button from 'react-bootstrap/Button';
+import Offcanvas from 'react-bootstrap/Offcanvas';
 
 import './App.css';
 import TroveList from "./TroveList";
 import TroveSummary from "./Trove";
 
-const fetchTroves = async ()=> {
+const fetchTroves = async () => {
     try {
-        const {data: response} = await axios.get("/troves/summary");
+        const { data: response } = await axios.get("/troves/summary");
         return response
     } catch (error) {
         console.log(error);
     }
 };
 
+
 const App = () => {
 
     const [troves, setTroves]: [TroveSummary[], any] = useState([]);
 
     useEffect(() => {
-            fetchTroves().then(theTroves => {
-                setTroves(theTroves)
-            });
+        fetchTroves().then(theTroves => {
+            setTroves(theTroves)
+        });
 
-            // cleanup function
-            return () => undefined;
-        },
+        // cleanup function
+        return () => undefined;
+    },
         // deps
         []
     );
 
     // console.log(`troves is length ${troves.length}`)
 
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     return (
-        <div>
-            <TroveList troves={troves} />
-        </div>
+        <>
+            <Button variant="primary" onClick={handleShow}>
+                Choose Troves
+            </Button>
+
+            <div>
+                <p>This is to the right of the TroveList sidebar.
+                </p>
+                <p>
+                    Dunno how to align it to top.
+                </p>
+            </div>
+
+            <Offcanvas show={show} onHide={handleClose}>
+                <Offcanvas.Header closeButton>
+                    <Offcanvas.Title>Troves</Offcanvas.Title>
+                </Offcanvas.Header>
+
+                <Offcanvas.Body>
+                    <TroveList troves={troves} />
+                </Offcanvas.Body>
+            </Offcanvas>
+        </>
     );
 };
 
