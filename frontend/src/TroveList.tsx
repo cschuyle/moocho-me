@@ -12,7 +12,7 @@ interface TroveListProps {
 const TroveList = (props: TroveListProps) => {
     const [troveFilter, setTroveFilter]: [string, any] = useState('');
     const [filteredTroves, setFilteredTroves]: [TroveSummary[], any] = useState([]);
-    const [selectedTroves, setSelectedTroves]: [Set<string>, any] = useState(new Set<string>);
+    const [selectedTroves, setSelectedTroves]: [string, any] = useState("");
 
     React.useEffect(() => {
         setFilteredTroves(props.troves);
@@ -70,18 +70,18 @@ const TroveList = (props: TroveListProps) => {
     // TROVE SELECTION (checckboxes)
 
     const isTroveSelected = (troveId: string) => {
-        return troveId in selectedTroves
+        return selectedTroves.indexOf(troveId) >= 0
     }
 
     const handleTroveSelectionChanged = (e: any, troveId: string) => {
         const wasSelected = isTroveSelected(troveId)
         console.log("Will change troveId " + troveId + " to " + !wasSelected)
-        const newSelectedTroves = new Set(selectedTroves)
+        let newSelectedTroves = ""+selectedTroves
         // console.log(`old ${selectedTroves} new ${newSelectedTroves}`)
         if (wasSelected) {
-            newSelectedTroves.delete(troveId);
+            newSelectedTroves = newSelectedTroves.replace(troveId, "");
         } else {
-            newSelectedTroves.add(troveId)
+            newSelectedTroves += troveId
         }
         setSelectedTroves(newSelectedTroves)
         // console.log("Did change troveId " + troveId + " to " + isTroveSelected(troveId))
