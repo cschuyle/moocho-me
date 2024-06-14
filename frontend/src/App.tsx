@@ -7,6 +7,7 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import './App.css';
 import TroveList from "./TroveList";
 import TroveSummary from "./Trove";
+import SearchResults from './SearchResults';
 
 const fetchTroves = async () => {
     try {
@@ -47,13 +48,9 @@ const App = () => {
                 Choose Troves
             </Button>
 
-            <div>
-                <p>This is to the right of the TroveList sidebar.
-                </p>
-                <p>
-                    Dunno how to align it to top.
-                </p>
-            </div>
+            <SearchResults
+                results={["Item 1", "Item 2"]}
+            />
 
             <Offcanvas show={show} onHide={handleClose}>
                 <Offcanvas.Header closeButton>
