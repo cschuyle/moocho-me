@@ -67,10 +67,14 @@ const TroveList = (props: TroveListProps) => {
     };
 
 
-    // TROVE SELECTION (checckboxes)
+    // TROVE SELECTION (checkboxes)
+
+    // The way to encode troveIds in the state variable. Puke.
+    const troveString = (troveId: string) => `~${troveId}~`
 
     const isTroveSelected = (troveId: string) => {
-        return selectedTroves.indexOf(troveId) >= 0
+        const troveStr = troveString(troveId)
+        return selectedTroves.indexOf(troveStr) >= 0
     }
 
     const handleTroveSelectionChanged = (e: any, troveId: string) => {
@@ -79,9 +83,9 @@ const TroveList = (props: TroveListProps) => {
         let newSelectedTroves = ""+selectedTroves
         // console.log(`old ${selectedTroves} new ${newSelectedTroves}`)
         if (wasSelected) {
-            newSelectedTroves = newSelectedTroves.replace(troveId, "");
+            newSelectedTroves = newSelectedTroves.replace(troveString(troveId), "");
         } else {
-            newSelectedTroves += troveId
+            newSelectedTroves += troveString(troveId)
         }
         setSelectedTroves(newSelectedTroves)
         // console.log("Did change troveId " + troveId + " to " + isTroveSelected(troveId))
