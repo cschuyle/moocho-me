@@ -5,13 +5,15 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 interface TroveListProps {
-    troves: Array<TroveSummary>;
+    troves: Array<TroveSummary>
+    selectedTroves: any
+    setSelectedTroves: any
 }
 
 const TroveList = (props: TroveListProps) => {
     const [troveFilter, setTroveFilter]: [string, any] = useState('');
     const [filteredTroves, setFilteredTroves]: [TroveSummary[], any] = useState([]);
-    const [selectedTroves, setSelectedTroves]: [string, any] = useState("");
+    
 
     React.useEffect(() => {
         setFilteredTroves(props.troves);
@@ -73,20 +75,20 @@ const TroveList = (props: TroveListProps) => {
 
     const isTroveSelected = (troveId: string) => {
         const troveStr = troveString(troveId)
-        return selectedTroves.indexOf(troveStr) >= 0
+        return props.selectedTroves.indexOf(troveStr) >= 0
     }
 
     const handleTroveSelectionChanged = (e: any, troveId: string) => {
         const wasSelected = isTroveSelected(troveId)
         console.log("Will change troveId " + troveId + " to " + !wasSelected)
-        let newSelectedTroves = ""+selectedTroves
+        let newSelectedTroves = ""+props.selectedTroves
         // console.log(`old ${selectedTroves} new ${newSelectedTroves}`)
         if (wasSelected) {
             newSelectedTroves = newSelectedTroves.replace(troveString(troveId), "");
         } else {
             newSelectedTroves += troveString(troveId)
         }
-        setSelectedTroves(newSelectedTroves)
+        props.setSelectedTroves(newSelectedTroves)
         // console.log("Did change troveId " + troveId + " to " + isTroveSelected(troveId))
     }
 

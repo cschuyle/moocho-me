@@ -19,9 +19,22 @@ const fetchTroves = async () => {
 };
 
 
+const arrayFrom = (encodedArray: string) => {
+    console.log(`encodedArray ${encodedArray}`)
+    if(encodedArray.length == 0) {
+        return []
+    }
+    encodedArray = encodedArray.substring(1, encodedArray.length-1)
+    console.log(`substring encodedArray ${encodedArray}`)
+    const asArray = encodedArray.split("~~")
+    console.log(`split ${asArray}`)
+    return asArray
+}
+
 const App = () => {
 
     const [troves, setTroves]: [TroveSummary[], any] = useState([]);
+    const [selectedTroves, setSelectedTroves]: [string, any] = useState("");
 
     useEffect(() => {
         fetchTroves().then(theTroves => {
@@ -49,7 +62,7 @@ const App = () => {
             </Button>
 
             <SearchResults
-                results={["Item 1", "Item 2"]}
+                selectedTroves={arrayFrom(selectedTroves)}
             />
 
             <Offcanvas show={show} onHide={handleClose}>
@@ -58,7 +71,11 @@ const App = () => {
                 </Offcanvas.Header>
 
                 <Offcanvas.Body>
-                    <TroveList troves={troves} />
+                    <TroveList 
+                        troves={troves}
+                        selectedTroves={selectedTroves}
+                        setSelectedTroves={setSelectedTroves}
+                    />
                 </Offcanvas.Body>
             </Offcanvas>
         </>

@@ -50,7 +50,7 @@ RESPONSE
 
 // THis is wrong. It should be the list of troves.
 interface SearchResultsProps {
-    results: string[];
+    selectedTroves: string[]
 }
 
 interface SearchResult {
@@ -68,7 +68,8 @@ const SearchResults = (props: SearchResultsProps) => {
 
     const doSearchRequest = async (searchText: string) => {
         try {
-            const { data: response } = await axios.get(`/search?troves=*&query=${encodeURI(searchText)}&maxResults=1500`);
+            const selectedTrovesQuery=(props.selectedTroves.length == 0) ? "*" : props.selectedTroves.join(",")
+            const { data: response } = await axios.get(`/search?troves=${selectedTrovesQuery}&query=${encodeURI(searchText)}&maxResults=1500`);
             return response
         } catch (error) {
             console.log(error);
