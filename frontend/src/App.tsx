@@ -20,14 +20,11 @@ const fetchTroves = async () => {
 
 
 const arrayFrom = (encodedArray: string) => {
-    console.log(`encodedArray ${encodedArray}`)
     if(encodedArray.length == 0) {
         return []
     }
     encodedArray = encodedArray.substring(1, encodedArray.length-1)
-    console.log(`substring encodedArray ${encodedArray}`)
     const asArray = encodedArray.split("~~")
-    console.log(`split ${asArray}`)
     return asArray
 }
 
@@ -47,8 +44,6 @@ const App = () => {
         // deps
         []
     );
-
-    // console.log(`troves is length ${troves.length}`)
 
     const [show, setShow] = useState(false);
 

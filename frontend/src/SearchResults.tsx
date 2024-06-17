@@ -6,6 +6,8 @@ import Button from 'react-bootstrap/Button';
 
 import { Form } from 'react-bootstrap';
 
+import TroveHits from "./TroveHits"
+
 /*
 GET
 https://moocho.me/search?troves=books:primary,other-covers:secondary&query=*&maxResults=1500
@@ -59,12 +61,21 @@ interface SearchResult {
     title: string;
 }
 
+// TODO How do I make a new one of these? - using `any` at the moment.
+// interface TroveHit {
+//     troveId: string;
+//     shortName: string;
+//     hitCount: number;
+//     totalCount: number;
+// }
+
 const SearchResults = (props: SearchResultsProps) => {
 
     // SEARCH
 
     const [searchText, setSearchText]: [string, any] = useState('');
     const [resultItems, setResultItems]: [Array<any>, any] = useState([]);
+    const [troveHits, setTroveHits]: [Array<any>, any] = useState([]);
 
     const doSearchRequest = async (searchText: string) => {
         try {
@@ -86,6 +97,21 @@ const SearchResults = (props: SearchResultsProps) => {
                 }
             })
             setResultItems(resultItems)
+
+            const theTroveHits = response.troveHits.map((troveHit:any) => {
+                if(props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
+                    return {
+                        troveId: troveHit.troveId,
+                        shortName: troveHit.shortName,
+                        hitCount: troveHit.hitCount,
+                        totalCount: troveHit.totalCount
+                    }
+                }
+                return null
+            })
+            .filter((thing:any) => thing !== null)
+
+            setTroveHits(theTroveHits)
         });
     }
 
@@ -113,6 +139,7 @@ const SearchResults = (props: SearchResultsProps) => {
      
     return (
         <>
+        <TroveHits troveHits={troveHits} />
         <Form>
             <Form.Control
                 type="search"

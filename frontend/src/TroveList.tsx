@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useState } from 'react';
+import React, { useState } from 'react';
 import TroveSummary from "./Trove";
 
 import Button from 'react-bootstrap/Button';
@@ -22,10 +22,8 @@ const TroveList = (props: TroveListProps) => {
     // TROVE FILTER (textbox)
 
     const handleTroveFilterChanged = (input: React.ChangeEvent<HTMLInputElement>) => {
-        // console.log("filter changed to " + input.target.value)
         input.preventDefault();
         setTroveFilter(input.target.value);
-        // console.log("handled '" + input.target.value + "' - " + (typeof input.target.value))
         if (input.target.value === "") {
             filterTroveList(input.target.value)
         }
@@ -34,12 +32,10 @@ const TroveList = (props: TroveListProps) => {
     function filterTroveList(theFilter: string) {
 
         if (theFilter === "") {
-            // console.log("it's empty!")
             setFilteredTroves(props.troves)
             return
         }
         const filtered = props.troves.filter(trove => trove.name.toLowerCase().includes(theFilter.toLowerCase()) || trove.id.toLowerCase().includes(troveFilter.toLowerCase()))
-        // console.log(`${props.troves.length}, filtered with ${troveFilter}: ${filtered.length}`)
         setFilteredTroves(filtered)
     }
 
@@ -58,7 +54,6 @@ const TroveList = (props: TroveListProps) => {
             setTroveFilter("")
             filterTroveList(troveFilter)
         }
-        // console.log("pressed " + e.key)
     };
 
     // Nothing to do on the backend for this form
@@ -80,16 +75,13 @@ const TroveList = (props: TroveListProps) => {
 
     const handleTroveSelectionChanged = (e: any, troveId: string) => {
         const wasSelected = isTroveSelected(troveId)
-        console.log("Will change troveId " + troveId + " to " + !wasSelected)
         let newSelectedTroves = ""+props.selectedTroves
-        // console.log(`old ${selectedTroves} new ${newSelectedTroves}`)
         if (wasSelected) {
             newSelectedTroves = newSelectedTroves.replace(troveString(troveId), "");
         } else {
             newSelectedTroves += troveString(troveId)
         }
         props.setSelectedTroves(newSelectedTroves)
-        // console.log("Did change troveId " + troveId + " to " + isTroveSelected(troveId))
     }
 
     // THE MEAT
