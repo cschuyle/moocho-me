@@ -51,3 +51,9 @@ bin/
 # direnv
 .envrc
 
+
+# IntelliJ
+.idea
+*.iws
+*.iml
+*.ipr
