@@ -113,10 +113,10 @@ class Searcher(troves: List<Trove>) : Closeable {
     private fun normalizeScore(searchResult: SearchResult, maxScore: Double): SearchResult =
         SearchResult(searchResult.primaryHit, searchResult.secondaryHits, searchResult.score / maxScore)
 
-    fun search(queryString: String, maxResults: Int): List<SearchResult> {
-        logger.info("Query ${queryString}")
+    fun search(queryText: String, maxResults: Int): List<SearchResult> {
+        logger.info("Query ${queryText}")
 
-        if (queryString.isBlank()) {
+        if (queryText.isBlank()) {
             return listOf()
         }
 
@@ -126,7 +126,7 @@ class Searcher(troves: List<Trove>) : Closeable {
 
         DirectoryReader.open(trovesIndex.directory).use { reader ->
             val isearcher = IndexSearcher(reader)
-            val query = createQuery(queryString, analyzer)
+            val query = createQuery(queryText, analyzer)
             val scoreDocs = isearcher
                 .search(query, maxResults)
                 .scoreDocs

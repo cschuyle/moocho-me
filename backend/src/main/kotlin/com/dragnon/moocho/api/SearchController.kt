@@ -57,7 +57,7 @@ class SearchController(val repository: TroveRepository) {
         }
         val searchResults2 = Searcher(repository.list()).search(query, maxResults)
         searchResults2.forEach { searchResult ->
-            troveHits.compute(searchResult.primaryHit.troveId) { _, v -> if (v == null) v else v + 1 }
+            troveHits.compute(searchResult.primaryHit.troveId) { _, v -> if (v == null) null else v + 1 }
         }
 
         val troveHitsResponse = troveHits

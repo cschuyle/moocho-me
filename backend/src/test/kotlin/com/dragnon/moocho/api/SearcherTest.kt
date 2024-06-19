@@ -32,4 +32,44 @@ class SearcherTest {
             )
         )
     }
+
+    // TODO Should refactor the controller so the logic is in the Search service.
+//    @Test
+//    fun test_wildcardSearch() {
+//        val searcher = Searcher(
+//            listOf(
+//                Trove("trove-0", "trove zero", "tr0", listOf("not at all related"), listOf()),
+//                Trove("trove-1", "trove one", "tr1", listOf("thing 1", "thing 2"), listOf()),
+//
+//            )
+//        )
+//
+//        assertThat(
+//            searcher.search("*", 1000), `is`(
+//                SearchResponse(
+//                    listOf(
+//                        TroveHit("trove-0", 1, "trove zero", "tr0", 1),
+//                        TroveHit("trove-1", 2, "trove one", "tr1", 2)
+//                    ),
+//                    listOf(
+//                        SearchResult(
+//                            ItemHit(0, 1.0, "trove-0", "not at all related"),
+//                            listOf(),
+//                            1.0
+//                        ),
+//                        SearchResult(
+//                            ItemHit(1, 1.0, "trove-1", "thing 1"),
+//                            listOf(),
+//                            1.0
+//                        ),
+//                        SearchResult(
+//                            ItemHit(1, 1.0, "trove-1", "thing 2"),
+//                            listOf(),
+//                            1.0
+//                        )
+//                    )
+//                )
+//            )
+//        )
+//    }
 }
