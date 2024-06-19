@@ -80,7 +80,7 @@ const SearchResults = (props: SearchResultsProps) => {
     const doSearchRequest = async (searchText: string) => {
         try {
             const selectedTrovesQuery=(props.selectedTroves.length == 0) ? "*" : props.selectedTroves.join(",")
-            const { data: response } = await axios.get(`/search?troves=${selectedTrovesQuery}&query=${encodeURI(searchText)}&maxResults=1500`);
+            const { data: response } = await axios.get(`/search?troves=${selectedTrovesQuery}&query=${encodeURI(searchText)}&maxResults=3000`);
             return response
         } catch (error) {
             console.log(error);
