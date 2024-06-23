@@ -14,7 +14,9 @@ class SearchController(val repository: TroveRepository) {
         @RequestParam maxResults: Int
     ) =
         SearchResponse(
+            // Summary of hits per trove
             getTroveHits(query, maxResults),
+            // The actual hits for all the troves
             getSearchResults(troves, query, maxResults)
         )
 
