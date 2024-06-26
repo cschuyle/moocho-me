@@ -8,10 +8,12 @@ data class TroveHit(
     val totalCount: Int
 )
 
-data class SearchResponse(val troveHits: List<TroveHit>, val searchResults: SearchResults)
+data class QueryResult(
+    val troveHits: List<TroveHit>,
+    val searchResults: List<SearchResult>
+)
 
 data class ItemHit(val doc: Int, val score: Double, val troveId: String, val title: String)
 
 data class SearchResult(val primaryHit: ItemHit, val secondaryHits: List<ItemHit>, val score: Double)
 
-typealias SearchResults = List<SearchResult>

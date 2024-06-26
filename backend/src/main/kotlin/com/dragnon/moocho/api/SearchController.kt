@@ -13,7 +13,7 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
         @RequestParam query: String,
         @RequestParam maxResults: Int
     ) =
-        SearchResponse(
+        QueryResult(
             // Summary of hits per trove
             getTroveHits(query, maxResults),
             // The actual hits for all the troves
@@ -24,7 +24,7 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
         trovesString: String,
         query: String,
         maxResults: Int
-    ): SearchResults {
+    ): List<SearchResult> {
         val troveString = trovesString.split(",")
         val troves = if (trovesString.isBlank() || trovesString == "*") {
             repository.list()
