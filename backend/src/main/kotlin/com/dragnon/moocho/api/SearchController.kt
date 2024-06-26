@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class SearchController(val repository: TroveRepository) {
+class SearchController(val repository: TroveRepository, val duplicateFinder: DuplicateFinder) {
 
     @GetMapping("/search")
     fun search(
@@ -25,29 +25,29 @@ class SearchController(val repository: TroveRepository) {
         query: String,
         maxResults: Int
     ): SearchResults {
-        val troves = trovesString.split(",")
-        val repos = if (trovesString.isBlank() || trovesString == "*") {
+        val troveString = trovesString.split(",")
+        val troves = if (trovesString.isBlank() || trovesString == "*") {
             repository.list()
         } else {
-            troves.map { troveId ->
+            troveString.map { troveId ->
                 repository.findById(
                     troveId
                         .replace(Regex(":.*"), "")
                 )
             }
         }
-        val primaryTroves = troves
+        val primaryTroveIds = troveString
             .filter { troveId -> troveId.matches(Regex(".+:primary")) }
             .map { troveId -> troveId.replace(Regex(":.*"), "") }
 
-        val secondaryTroves = troves
+        val secondaryTroveIds = troveString
             .filter { troveId -> troveId.matches(Regex(".+:secondary")) || troveId.matches(Regex("[^:]+")) }
             .map { troveId -> troveId.replace(Regex(":.*"), "") }
 
-        val searchResults = if (primaryTroves.isNotEmpty() && secondaryTroves.isNotEmpty())
-            Searcher(repos).findDuplicates(primaryTroves, secondaryTroves, query, maxResults)
+        val searchResults = if (primaryTroveIds.isNotEmpty() && secondaryTroveIds.isNotEmpty())
+            duplicateFinder.findDuplicates(troves, primaryTroveIds, secondaryTroveIds, query, maxResults)
         else
-            Searcher(repos).search(query, maxResults)
+            Searcher(troves).search(query, maxResults)
 
         return searchResults
     }
@@ -76,18 +76,4 @@ class SearchController(val repository: TroveRepository) {
     }
 }
 
-data class TroveHit(
-    val troveId: String,
-    val hitCount: Int,
-    val name: String,
-    val shortName: String,
-    val totalCount: Int
-)
 
-data class SearchResponse(val troveHits: List<TroveHit>, val searchResults: SearchResults)
-
-data class ItemHit(val doc: Int, val score: Double, val troveId: String, val title: String)
-
-data class SearchResult(val primaryHit: ItemHit, val secondaryHits: List<ItemHit>, val score: Double)
-
-typealias SearchResults = List<SearchResult>
