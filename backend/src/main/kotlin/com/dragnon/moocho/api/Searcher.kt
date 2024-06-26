@@ -6,15 +6,11 @@ import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.search.MatchAllDocsQuery
 import java.io.Closeable
 
-class Searcher(troves: List<Trove>) : Closeable {
+class Searcher(troves: List<Trove>) {
 
     private val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)
 
     private val trovesIndex = getTrovesIndex(troves)
-
-    override fun close() {
-        trovesIndex.close()
-    }
 
     fun search(queryText: String, maxResults: Int): List<SearchResult> {
         logger.info("Query ${queryText}")

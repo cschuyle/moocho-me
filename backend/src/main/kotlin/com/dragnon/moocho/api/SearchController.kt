@@ -9,16 +9,18 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
 
     @GetMapping("/search")
     fun search(
-        @RequestParam troves: String,
+        @RequestParam trovesString: String,
         @RequestParam query: String,
         @RequestParam maxResults: Int
-    ) =
-        QueryResult(
+    ): QueryResult {
+        val searchResults = getSearchResults(trovesString, query, maxResults)
+        return QueryResult(
             // Summary of hits per trove
-            getTroveHits(query, maxResults),
+            getTroveHits(searchResults),
             // The actual hits for all the troves
-            getSearchResults(troves, query, maxResults)
+            searchResults
         )
+    }
 
     private fun getSearchResults(
         trovesString: String,
@@ -52,14 +54,15 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
         return searchResults
     }
 
-    private fun getTroveHits(query: String, maxResults: Int): List<TroveHit> {
+    private fun getTroveHits(searchResults: List<SearchResult>): List<TroveHit> {
         val troveHits = HashMap<String, Int>()
         repository.list().forEach { trove ->
             troveHits[trove.id] = 0
         }
-        val searchResults2 = Searcher(repository.list()).search(query, maxResults)
-        searchResults2.forEach { searchResult ->
-            troveHits.compute(searchResult.primaryHit.troveId) { _, v -> if (v == null) null else v + 1 }
+        searchResults.forEach { searchResult ->
+            troveHits.compute(searchResult.primaryHit.troveId) { _, v ->
+                if (v == null) null else v + 1
+            }
         }
 
         val troveHitsResponse = troveHits
@@ -75,5 +78,3 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
         return troveHitsResponse
     }
 }
-
-

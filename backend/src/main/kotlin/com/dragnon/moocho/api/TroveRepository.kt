@@ -25,7 +25,6 @@ class TroveRepository(
 
     fun add(trove: Trove) {
         repo[trove.name] = trove
-
     }
 
     fun findById(troveId: String): Trove {

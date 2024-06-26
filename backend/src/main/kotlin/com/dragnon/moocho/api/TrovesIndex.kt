@@ -20,7 +20,7 @@ fun getTrovesIndex(troves: List<Trove>) =
 
 private fun troveIndexKey(troves: List<Trove>) = troves.map { it.id }.joinToString("|")
 
-class TrovesIndex internal constructor(val troves: List<Trove>) : Closeable {
+class TrovesIndex internal constructor(troves: List<Trove>) : Closeable {
 
     private val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)
 
@@ -32,6 +32,7 @@ class TrovesIndex internal constructor(val troves: List<Trove>) : Closeable {
         val analyzer = AccentedAnalyzer()
 
         this.indexPath = Files.createTempDirectory("tempIndex")
+        logger.info("Lucene index directory: ${this.indexPath}")
         this.directory = FSDirectory.open(indexPath)
         val config = IndexWriterConfig(analyzer)
         val iwriter = IndexWriter(directory, config)
