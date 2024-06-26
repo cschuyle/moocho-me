@@ -9,11 +9,11 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
 
     @GetMapping("/search")
     fun search(
-        @RequestParam trovesString: String,
+        @RequestParam troves: String,
         @RequestParam query: String,
         @RequestParam maxResults: Int
     ): QueryResult {
-        val searchResults = getSearchResults(trovesString, query, maxResults)
+        val searchResults = getSearchResults(troves, query, maxResults)
         return QueryResult(
             // Summary of hits per trove
             getTroveHits(searchResults),

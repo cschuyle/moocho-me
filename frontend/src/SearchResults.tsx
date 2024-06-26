@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
 
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
-import { Form } from 'react-bootstrap';
+import {Form} from 'react-bootstrap';
 
 import TroveHits from "./TroveHits"
 
@@ -53,6 +53,7 @@ RESPONSE
 // THis is wrong. It should be the list of troves.
 interface SearchResultsProps {
     selectedTroves: string[]
+    primaryTrove: string
 }
 
 interface SearchResult {
@@ -77,29 +78,37 @@ const SearchResults = (props: SearchResultsProps) => {
     const [resultItems, setResultItems]: [Array<any>, any] = useState([]);
     const [troveHits, setTroveHits]: [Array<any>, any] = useState([]);
 
+    function getSelectedTrovesQuery() {
+        console.log("Primary Trove is "+props.primaryTrove)
+        return (props.selectedTroves.length == 0)
+            ? "*"
+            : props.selectedTroves
+                .map(trove => {
+                    if (props.primaryTrove === trove) {
+                        return `${trove}:primary`
+                    }
+                    return `${trove}:secondary`
+                })
+                .join(",");
+    }
+
     const doSearchRequest = async (searchText: string) => {
         try {
-            const selectedTrovesQuery=(props.selectedTroves.length == 0) ? "*" : props.selectedTroves.join(",")
-            const { data: response } = await axios.get(`/search?troves=${selectedTrovesQuery}&query=${encodeURI(searchText)}&maxResults=3000`);
+            const selectedTrovesQuery = getSelectedTrovesQuery()
+            const {data: response} = await axios.get(`/search?troves=${selectedTrovesQuery}&query=${encodeURI(searchText)}&maxResults=3000`);
             return response
         } catch (error) {
             console.log(error);
         }
     }
-    
-    const doSearch = (searchText: string) => {    
+
+    const doSearch = (searchText: string) => {
         doSearchRequest(searchText).then(response => {
-            const resultItems = response.searchResults.map((searchResult:any) => {
-                return {
-                    score: searchResult.primaryHit.score,
-                    troveId: searchResult.primaryHit.troveId,
-                    title: searchResult.primaryHit.title
-                }
-            })
+            const resultItems = response.searchResults
             setResultItems(resultItems)
 
-            const theTroveHits = response.troveHits.map((troveHit:any) => {
-                if(props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
+            const theTroveHits = response.troveHits.map((troveHit: any) => {
+                if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
                     return {
                         troveId: troveHit.troveId,
                         shortName: troveHit.shortName,
@@ -109,7 +118,7 @@ const SearchResults = (props: SearchResultsProps) => {
                 }
                 return null
             })
-            .filter((thing:any) => thing !== null)
+                .filter((thing: any) => thing !== null)
 
             setTroveHits(theTroveHits)
         });
@@ -136,41 +145,52 @@ const SearchResults = (props: SearchResultsProps) => {
     };
 
     // THE MEAT
-     
+
+    const isItStriped = (props.primaryTrove !== "" ? "" : "striped")
     return (
         <>
-        <TroveHits troveHits={troveHits} />
-        <Form>
-            <Form.Control
-                type="search"
-                id="searchText"
-                placeholder='search selected Troves'
-                onChange={handleSearchTextChanged}
-                onKeyDown={handleKeyDown}
-            />
-            <Button
-                onClick={handleDoSearch}>Search
-            </Button>
-        </Form>
+            <TroveHits troveHits={troveHits}/>
+            <Form>
+                <Form.Control
+                    type="search"
+                    id="searchText"
+                    placeholder='search selected Troves'
+                    onChange={handleSearchTextChanged}
+                    onKeyDown={handleKeyDown}
+                />
+                <Button
+                    onClick={handleDoSearch}>Search
+                </Button>
+            </Form>
 
-        <Table striped bordered hover size="sm">
-            <thead>
+            <Table bordered hover size="sm">
+                <thead>
                 <tr>
                     <th>Score</th>
                     <th>Trove</th>
                     <th>Title</th>
                 </tr>
-            </thead>
-            <tbody>
-                {resultItems.map(item =>
-                <tr>
-                    <td>{Math.floor(item.score * 100)}%</td>
-                    <td>{item.troveId}</td>
-                    <td>{item.title}</td>
-                </tr>
-                )}
-            </tbody>
-        </Table>
+                </thead>
+                <tbody>
+                {/*TODO: Keys for rows*/}
+                {resultItems.map(item => (
+                    <>
+                        <tr className="table-secondary">
+                            <td>{Math.floor(item.primaryHit.score * 100)}%</td>
+                            <td>{item.primaryHit.troveId}</td>
+                            <td>{item.primaryHit.title}</td>
+                        </tr>
+                        {item.secondaryHits.map((secondary: any) => (
+                            <tr>
+                                <td>{Math.floor(secondary.score * 100)}%</td>
+                                <td>{secondary.troveId}</td>
+                                <td>{secondary.title}</td>
+                            </tr>
+                        ))}
+                    </>
+                ))}
+                </tbody>
+            </Table>
         </>
     );
 };

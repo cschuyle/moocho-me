@@ -6,8 +6,12 @@ import Form from 'react-bootstrap/Form';
 
 interface TroveListProps {
     troves: Array<TroveSummary>
-    selectedTroves: any
+
+    selectedTroves: any // TODO Should this be state?
     setSelectedTroves: any
+
+    primaryTrove: string
+    setPrimaryTrove: any
 }
 
 const TroveList = (props: TroveListProps) => {
@@ -84,6 +88,20 @@ const TroveList = (props: TroveListProps) => {
         props.setSelectedTroves(newSelectedTroves)
     }
 
+    // PRIMARY TROVE - there can be only one and it must also be selected.
+
+    const isTrovePrimarySelected = (troveId: string) => {
+        return props.primaryTrove == troveId
+    }
+
+    const handlePrimaryTroveSelectionChanged = (e: any, troveId: string) => {
+        if (props.primaryTrove === troveId) {
+            props.setPrimaryTrove("")
+        } else {
+            props.setPrimaryTrove(troveId)
+        }
+    }
+
     // THE MEAT
     
     return (
@@ -103,22 +121,27 @@ const TroveList = (props: TroveListProps) => {
                 </Form>
             </div>
 
-            <table>
-                <tbody>
                     {filteredTroves.map((trove) => (
-                        <tr className="trove">
+                        <div>
                             <Form.Check
                                 key={trove.id}
+                                inline
                                 checked={isTroveSelected(trove.id)}
+                                label={trove.name}
                                 onChange={(e: any) => handleTroveSelectionChanged(e, trove.id)}
-                            >
-                            </Form.Check>
-
-                            <td>{trove.name}</td>
-                        </tr>
+                            />
+                            {isTroveSelected(trove.id) &&
+                            <Form.Check
+                                key={"primary-selector-"+trove.id}
+                                type="switch"
+                                inline
+                                reverse
+                                checked={isTrovePrimarySelected(trove.id)}
+                                onChange={(e: any) => handlePrimaryTroveSelectionChanged(e, trove.id)}
+                            />
+                            }
+                        </div>
                     ))}
-                </tbody>
-            </table>
         </div>
     );
 };

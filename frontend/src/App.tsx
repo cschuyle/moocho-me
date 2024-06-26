@@ -32,6 +32,7 @@ const App = () => {
 
     const [troves, setTroves]: [TroveSummary[], any] = useState([]);
     const [selectedTroves, setSelectedTroves]: [string, any] = useState("");
+    const [primaryTrove, setPrimaryTrove]: [string, any] = useState("");
 
     useEffect(() => {
         fetchTroves().then(theTroves => {
@@ -58,6 +59,7 @@ const App = () => {
 
             <SearchResults
                 selectedTroves={arrayFrom(selectedTroves)}
+                primaryTrove={primaryTrove}
             />
 
             <Offcanvas show={show} onHide={handleClose}>
@@ -70,6 +72,8 @@ const App = () => {
                         troves={troves}
                         selectedTroves={selectedTroves}
                         setSelectedTroves={setSelectedTroves}
+                        primaryTrove={primaryTrove}
+                        setPrimaryTrove={setPrimaryTrove}
                     />
                 </Offcanvas.Body>
             </Offcanvas>
