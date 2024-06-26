@@ -142,6 +142,11 @@ class DuplicateFinder() {
                 }
                 .take(maxDups)
 
+            // TODO Is taking the max what we want to base our output on? Probably not.
+            //   Figure out a more sophisticated way to:
+            //   - Rank and display the possible-duplicates in
+            //     - for each primary hit
+            //     - the entire SearchResults (list of primary hits)
             val compositeScore = if (secondaryHits.isEmpty()) 0.0 else secondaryHits.map { it.score }.maxOrNull()!!
             val searchResult = SearchResult(primaryHit, secondaryHits, compositeScore)
 
