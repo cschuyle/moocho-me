@@ -56,12 +56,6 @@ interface SearchResultsProps {
     primaryTrove: string
 }
 
-interface SearchResult {
-    score: Number;
-    troveId: string;
-    title: string;
-}
-
 // TODO How do I make a new one of these? - using `any` at the moment.
 // interface TroveHit {
 //     troveId: string;
@@ -80,7 +74,7 @@ const SearchResults = (props: SearchResultsProps) => {
 
     function getSelectedTrovesQuery() {
         console.log("Primary Trove is "+props.primaryTrove)
-        return (props.selectedTroves.length == 0)
+        return (props.selectedTroves.length === 0)
             ? "*"
             : props.selectedTroves
                 .map(trove => {
@@ -146,7 +140,6 @@ const SearchResults = (props: SearchResultsProps) => {
 
     // THE MEAT
 
-    const isItStriped = (props.primaryTrove !== "" ? "" : "striped")
     return (
         <>
             <TroveHits troveHits={troveHits}/>

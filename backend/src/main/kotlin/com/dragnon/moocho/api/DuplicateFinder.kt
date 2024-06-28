@@ -80,7 +80,7 @@ class DuplicateFinder() {
                             hitTroveDocument.title
                         )
                         primaryHits.add(primaryHit)
-                        logger.debug("PRIMARY HIT $primaryHit")
+                        logger.debug("PRIMARY HIT {}", primaryHit)
                     }
             }
             logger.info("Primary hit result count: ${primaryHits.size}")
@@ -150,7 +150,7 @@ class DuplicateFinder() {
             val compositeScore = if (secondaryHits.isEmpty()) 0.0 else secondaryHits.map { it.score }.maxOrNull()!!
             val searchResult = SearchResult(primaryHit, secondaryHits, compositeScore)
 
-            logger.debug("Search Result: $searchResult")
+            logger.debug("Search Result: {}", searchResult)
 
             return searchResult
         }
