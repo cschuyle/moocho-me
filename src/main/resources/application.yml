@@ -1,5 +1,5 @@
 spring:
   application.name: moocho-me-web
-  spring:
-    datasource:
-      driverClassName: org.postgresql.Driver
+  datasource:
+    driverClassName: org.postgresql.Driver
+  main.web-application-type: SERVLET
