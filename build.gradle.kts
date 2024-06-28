@@ -77,3 +77,10 @@ if (project.hasProperty("prod")) {
         }
     }
 }
+
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "com.dragnon.moocho.api.AppKt"
+    }
+}
+
