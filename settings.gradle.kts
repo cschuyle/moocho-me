@@ -5,6 +5,3 @@ pluginManagement {
 }
 
 rootProject.name = "moocho-web"
-
-include("frontend")
-include("backend")
