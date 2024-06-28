@@ -1,6 +1,5 @@
 spring:
-  application.name: items
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
+  application.name: moocho-me-web
+  spring:
+    datasource:
+      driverClassName: org.postgresql.Driver
