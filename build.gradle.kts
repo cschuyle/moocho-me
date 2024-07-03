@@ -1,57 +1,67 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    id("org.springframework.boot") version "3.3.0"
+    id("org.springframework.boot") version "3.3.1"
     id("io.spring.dependency-management") version "1.1.5"
-    id("org.jetbrains.kotlin.jvm") version "1.9.24"
-    id("org.jetbrains.kotlin.plugin.spring") version "1.9.24"
+    kotlin("jvm") version "1.9.24"
+    kotlin("plugin.spring") version "1.9.24"
 }
 
-group = "com.dragnon.moocho-web"
+group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-//	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    runtimeOnly("com.h2database:h2")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    // Web, API
+    implementation("org.springframework.boot:spring-boot-starter-web")
+
+    // Database
+    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    runtimeOnly("org.postgresql:postgresql")
+
+    // Security
     implementation("org.springframework.boot:spring-boot-starter-security")
+
 // TODO When this is actually deployed somewhere, cache the searchIndexes with time-expiration and test it.
 //    implementation("org.ehcache:ehcache:3.10.8")
 
-
-//	testImplementation 'org.jetbrains.kotlin:kotlin-test'
-
+    // Lucene
     implementation("org.apache.lucene:lucene-core:9.10.0")
     implementation("org.apache.lucene:lucene-analysis-common:9.10.0")
     implementation("org.apache.lucene:lucene-queryparser:9.10.0")
 
+    // AWS
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.732")
 
-    implementation("org.postgresql:postgresql:42.7.3")
+    // Local Dev
+    runtimeOnly("com.h2database:h2")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+    // Test
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "21"
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjsr305=strict")
     }
 }
 
@@ -59,38 +69,21 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.withType<Test> {
-    testLogging {
-//		events("standardOut", "started", "passed", "skipped", "failed")
-        events("failed")
-//		showStandardStreams = true
-        exceptionFormat = TestExceptionFormat.FULL
-    }
+// Don't do this - it breaks the executable jar (results in main ClassNotFound).
+//    tasks.withType<Jar> {
+//        manifest {
+//            attributes["Main-Class"] = "com.example.ktskull.AppKt"
+//        }
+//    }
+
+// Use this instead of tasks,withType<Jar>
+springBoot {
+    mainClass.set("com.dragnon.moocho.api.AppKt")
 }
 
-if (project.hasProperty("prod")) {
-    tasks.withType<Jar> {
-        dependsOn(":frontend:yarn_build")
-
-        from("../frontend/build") {
-            into("static")
-        }
-    }
+// Disable generation of plain jar - it confuses poor old Heroku unless you use a Procfile (override the startup command),
+// because Heroku uses build.libs/*.jar as its target for the java -jar command.
+// See https://docs.spring.io/spring-boot/gradle-plugin/packaging.html#packaging-executable.and-plain-archives
+tasks.named("jar") {
+    enabled = false
 }
-
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = "com.dragnon.moocho.api.AppKt"
-    }
-    // To avoid the duplicate handling strategy error
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    // To add all of the dependencies
-    from(sourceSets.main.get().output)
-
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
-}
-
