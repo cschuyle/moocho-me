@@ -38,3 +38,7 @@ You can also hit the REST API directly at <http://localhost:8080/>.
 ```shell
 ./gradlew test
 ```
+
+### Deploying
+
+`deploy/heroku.sh` does al that it necessary to  
