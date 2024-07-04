@@ -47,7 +47,7 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.732")
 
     // Local Dev
-    runtimeOnly("com.h2database:h2")
+    //    runtimeOnly("com.h2database:h2")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     // Test

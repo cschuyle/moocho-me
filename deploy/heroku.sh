@@ -18,5 +18,5 @@ cp -R ./frontend/build/ ./src/main/resources/public
 echo "######## Build SUCCESS ! Now you need to do this:
 - Test local manually: https://localhost:8080
 - Commit to git
-- `git push heroku`
+- git push heroku
 "

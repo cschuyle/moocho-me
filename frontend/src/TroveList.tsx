@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import TroveSummary from "./Trove";
 
 import Button from 'react-bootstrap/Button';
@@ -17,10 +17,10 @@ interface TroveListProps {
 const TroveList = (props: TroveListProps) => {
     const [troveFilter, setTroveFilter]: [string, any] = useState('');
     const [filteredTroves, setFilteredTroves]: [TroveSummary[], any] = useState([]);
-    
+
 
     React.useEffect(() => {
-        setFilteredTroves(props.troves);
+        filterTroveList(troveFilter)
     }, [props]);
 
     // TROVE FILTER (textbox)
@@ -39,7 +39,10 @@ const TroveList = (props: TroveListProps) => {
             setFilteredTroves(props.troves)
             return
         }
-        const filtered = props.troves.filter(trove => trove.name.toLowerCase().includes(theFilter.toLowerCase()) || trove.id.toLowerCase().includes(troveFilter.toLowerCase()))
+        const filtered = props.troves.filter(trove =>
+            trove.name.toLowerCase().includes(theFilter.toLowerCase()) ||
+            trove.id.toLowerCase().includes(troveFilter.toLowerCase())
+        )
         setFilteredTroves(filtered)
     }
 
@@ -79,7 +82,7 @@ const TroveList = (props: TroveListProps) => {
 
     const handleTroveSelectionChanged = (e: any, troveId: string) => {
         const wasSelected = isTroveSelected(troveId)
-        let newSelectedTroves = ""+props.selectedTroves
+        let newSelectedTroves = "" + props.selectedTroves
         if (wasSelected) {
             newSelectedTroves = newSelectedTroves.replace(troveString(troveId), "");
         } else {
@@ -103,7 +106,7 @@ const TroveList = (props: TroveListProps) => {
     }
 
     // THE MEAT
-    
+
     return (
         <div className="TroveList">
             <div>
@@ -120,28 +123,27 @@ const TroveList = (props: TroveListProps) => {
                     </Button>
                 </Form>
             </div>
-
-                    {filteredTroves.map((trove) => (
-                        <div>
-                            <Form.Check
-                                key={trove.id}
-                                inline
-                                checked={isTroveSelected(trove.id)}
-                                label={trove.name}
-                                onChange={(e: any) => handleTroveSelectionChanged(e, trove.id)}
-                            />
-                            {isTroveSelected(trove.id) &&
-                            <Form.Check
-                                key={"primary-selector-"+trove.id}
-                                type="switch"
-                                inline
-                                reverse
-                                checked={isTrovePrimarySelected(trove.id)}
-                                onChange={(e: any) => handlePrimaryTroveSelectionChanged(e, trove.id)}
-                            />
-                            }
-                        </div>
-                    ))}
+            {filteredTroves.map((trove) => (
+                <div>
+                    <Form.Check
+                        key={trove.id}
+                        inline
+                        checked={isTroveSelected(trove.id)}
+                        label={trove.name}
+                        onChange={(e: any) => handleTroveSelectionChanged(e, trove.id)}
+                    />
+                    {isTroveSelected(trove.id) &&
+                        <Form.Check
+                            key={"primary-selector-" + trove.id}
+                            type="switch"
+                            inline
+                            reverse
+                            checked={isTrovePrimarySelected(trove.id)}
+                            onChange={(e: any) => handlePrimaryTroveSelectionChanged(e, trove.id)}
+                        />
+                    }
+                </div>
+            ))}
         </div>
     );
 };
