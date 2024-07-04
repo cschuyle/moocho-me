@@ -77,9 +77,9 @@ tasks.withType<Test> {
 //    }
 
 // Use this instead of tasks,withType<Jar>
-springBoot {
-    mainClass.set("com.dragnon.moocho.api.AppKt")
-}
+//springBoot {
+//    mainClass.set("com.dragnon.moocho.api.AppKt")
+//}
 
 // Disable generation of plain jar - it confuses poor old Heroku unless you use a Procfile (override the startup command),
 // because Heroku uses build.libs/*.jar as its target for the java -jar command.
