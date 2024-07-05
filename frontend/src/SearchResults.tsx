@@ -54,6 +54,7 @@ RESPONSE
 interface SearchResultsProps {
     selectedTroves: string[]
     primaryTrove: string
+    getTroveShortName: any
 }
 
 // TODO How do I make a new one of these? - using `any` at the moment.
@@ -71,7 +72,6 @@ const SearchResults = (props: SearchResultsProps) => {
     const [searchText, setSearchText]: [string, any] = useState('');
     const [resultItems, setResultItems]: [Array<any>, any] = useState([]);
     const [troveHits, setTroveHits]: [Array<any>, any] = useState([]);
-    const [troveShortNameMap, setTroveShortNameMap]: [Map<string,string>, any] = useState(new Map<string,string>());
 
     function getSelectedTrovesQuery() {
         return (props.selectedTroves.length === 0)
@@ -99,10 +99,6 @@ const SearchResults = (props: SearchResultsProps) => {
     function mapTroveHits(troveHits: any) {
         return troveHits.map((troveHit: any) => {
             if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
-
-                troveShortNameMap.set(""+troveHit.troveId, ""+troveHit.shortName)
-                setTroveShortNameMap(troveShortNameMap)
-                // console.log("ADDED " + troveHit.troveId)
                 return {
                     troveId: troveHit.troveId,
                     shortName: troveHit.shortName,
@@ -114,16 +110,12 @@ const SearchResults = (props: SearchResultsProps) => {
         });
     }
 
-    function troveShortNameOf(troveId: string) {
-        return troveShortNameMap.get(troveId)
-    }
-
     function mapSearchResult(hit: any) {
         return {
             key: hit.doc,
             score: Math.floor(hit.score * 100),
             title: hit.title,
-            troveShortName: troveShortNameOf(hit.troveId)
+            troveShortName: props.getTroveShortName(hit.troveId)
         };
     }
 

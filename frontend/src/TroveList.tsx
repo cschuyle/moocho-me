@@ -18,7 +18,6 @@ const TroveList = (props: TroveListProps) => {
     const [troveFilter, setTroveFilter]: [string, any] = useState('');
     const [filteredTroves, setFilteredTroves]: [TroveSummary[], any] = useState([]);
 
-
     React.useEffect(() => {
         filterTroveList(troveFilter)
     }, [props]);

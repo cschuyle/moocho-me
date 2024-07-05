@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 
 import Button from 'react-bootstrap/Button';
@@ -11,7 +11,7 @@ import SearchResults from './SearchResults';
 
 const fetchTroves = async () => {
     try {
-        const { data: response } = await axios.get("/troves/summary");
+        const {data: response} = await axios.get("/troves/summary");
         return response
     } catch (error) {
         console.log(error);
@@ -20,36 +20,45 @@ const fetchTroves = async () => {
 
 
 const arrayFrom = (encodedArray: string) => {
-    if(encodedArray.length == 0) {
+    if (encodedArray.length == 0) {
         return []
     }
-    encodedArray = encodedArray.substring(1, encodedArray.length-1)
+    encodedArray = encodedArray.substring(1, encodedArray.length - 1)
     const asArray = encodedArray.split("~~")
     return asArray
 }
 
 const App = () => {
 
-    const [troves, setTroves]: [TroveSummary[], any] = useState([]);
-    const [selectedTroves, setSelectedTroves]: [string, any] = useState("");
-    const [primaryTrove, setPrimaryTrove]: [string, any] = useState("");
+    const [troves, setTroves]: [TroveSummary[], any] = useState([])
+    const [selectedTroves, setSelectedTroves]: [string, any] = useState("")
+    const [primaryTrove, setPrimaryTrove]: [string, any] = useState("")
+    const [troveShortNameMap, setTroveShortNameMap]: [Map<string, string>, any] =
+        useState(new Map<string, string>())
 
     useEffect(() => {
-        fetchTroves().then(theTroves => {
-            setTroves(theTroves)
-        });
+            fetchTroves().then(theTroves => {
+                setTroves(theTroves)
+                theTroves.map((theTrove: any) => {
+                    troveShortNameMap.set("" + theTrove.id, "" + theTrove.shortName)
+                })
+                setTroveShortNameMap(troveShortNameMap)
+            })
 
-        // cleanup function
-        return () => undefined;
-    },
+            // cleanup function
+            return () => undefined;
+        },
         // deps
         []
-    );
+    )
 
-    const [show, setShow] = useState(false);
+    const [show, setShow] = useState(false)
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false)
+    const handleShow = () => setShow(true)
+    const getTroveShortName = (troveId: string) => {
+        return troveShortNameMap.get(troveId)
+    }
 
     return (
         <>
@@ -60,6 +69,7 @@ const App = () => {
             <SearchResults
                 selectedTroves={arrayFrom(selectedTroves)}
                 primaryTrove={primaryTrove}
+                getTroveShortName={getTroveShortName}
             />
 
             <Offcanvas show={show} onHide={handleClose}>
@@ -68,7 +78,7 @@ const App = () => {
                 </Offcanvas.Header>
 
                 <Offcanvas.Body>
-                    <TroveList 
+                    <TroveList
                         troves={troves}
                         selectedTroves={selectedTroves}
                         setSelectedTroves={setSelectedTroves}
@@ -78,7 +88,7 @@ const App = () => {
                 </Offcanvas.Body>
             </Offcanvas>
         </>
-    );
-};
+    )
+}
 
 export default App;
