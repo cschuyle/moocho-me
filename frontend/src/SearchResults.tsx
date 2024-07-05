@@ -71,9 +71,9 @@ const SearchResults = (props: SearchResultsProps) => {
     const [searchText, setSearchText]: [string, any] = useState('');
     const [resultItems, setResultItems]: [Array<any>, any] = useState([]);
     const [troveHits, setTroveHits]: [Array<any>, any] = useState([]);
+    const [troveShortNameMap, setTroveShortNameMap]: [Map<string,string>, any] = useState(new Map<string,string>());
 
     function getSelectedTrovesQuery() {
-        console.log("Primary Trove is "+props.primaryTrove)
         return (props.selectedTroves.length === 0)
             ? "*"
             : props.selectedTroves
@@ -96,23 +96,54 @@ const SearchResults = (props: SearchResultsProps) => {
         }
     }
 
+    function mapTroveHits(troveHits: any) {
+        return troveHits.map((troveHit: any) => {
+            if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
+
+                troveShortNameMap.set(""+troveHit.troveId, ""+troveHit.shortName)
+                setTroveShortNameMap(troveShortNameMap)
+                // console.log("ADDED " + troveHit.troveId)
+                return {
+                    troveId: troveHit.troveId,
+                    shortName: troveHit.shortName,
+                    hitCount: troveHit.hitCount,
+                    totalCount: troveHit.totalCount
+                }
+            }
+            return null
+        });
+    }
+
+    function troveShortNameOf(troveId: string) {
+        return troveShortNameMap.get(troveId)
+    }
+
+    function mapSearchResult(hit: any) {
+        return {
+            key: hit.doc,
+            score: Math.floor(hit.score * 100),
+            title: hit.title,
+            troveShortName: troveShortNameOf(hit.troveId)
+        };
+    }
+
+    function mapSearchResults(searchResults: any): any {
+        return searchResults.map((searchResult: any) => {
+            const hit = searchResult.primaryHit
+            let mapped: any = mapSearchResult(hit)
+            mapped["secondaryHits"] = searchResult.secondaryHits.map((secondaryHit: any) =>{
+                return mapSearchResult(secondaryHit)
+            })
+            return mapped
+        })
+    }
+
     const doSearch = (searchText: string) => {
         doSearchRequest(searchText).then(response => {
-            const resultItems = response.searchResults
-            setResultItems(resultItems)
+            setResultItems(mapSearchResults(response.searchResults))
 
-            const theTroveHits = response.troveHits.map((troveHit: any) => {
-                if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
-                    return {
-                        troveId: troveHit.troveId,
-                        shortName: troveHit.shortName,
-                        hitCount: troveHit.hitCount,
-                        totalCount: troveHit.totalCount
-                    }
-                }
-                return null
-            })
-                .filter((thing: any) => thing !== null)
+            const theTroveHits = mapTroveHits(response.troveHits)
+                .filter((troveHit: any) => troveHit !== null)
 
             setTroveHits(theTroveHits)
         });
@@ -168,10 +199,10 @@ const SearchResults = (props: SearchResultsProps) => {
                 {/*TODO: Keys for rows*/}
                 {resultItems.map(item => (
                     <>
-                        <tr className="table-secondary">
-                            <td>{Math.floor(item.primaryHit.score * 100)}%</td>
-                            <td>{item.primaryHit.troveId}</td>
-                            <td>{item.primaryHit.title}</td>
+                        <tr className="table-secondary" key={item.key}>
+                            <td>{item.score}%</td>
+                            <td>{item.troveShortName}</td>
+                            <td>{item.title}</td>
                         </tr>
                         {item.secondaryHits.map((secondary: any) => (
                             <tr>
