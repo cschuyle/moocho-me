@@ -2,7 +2,9 @@
 
 **Moocho Me** is a mess O data with some ability to browse it.
 
-Actually, the data (except username and password) lives in <https://github.com/cschuyle/moocho> -- see that repo for details.
+Actually, the data (except username and password):
+    - Is managed in <https://github.com/cschuyle/moocho> -- see that repo for details.
+    - It then makes its way into AWS S3 as JSON documents. That's why you need AWS credentials below.
 
 ## Local Setup
 
