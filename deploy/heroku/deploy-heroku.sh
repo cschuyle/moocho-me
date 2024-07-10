@@ -5,7 +5,7 @@ script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 script_file=$(basename "$0")
 
 echo "######## Building frontend"
-cd "$script_dir/../frontend"
+cd "$script_dir/../../frontend"
 yarn build
 
 echo "######## Building backend"
