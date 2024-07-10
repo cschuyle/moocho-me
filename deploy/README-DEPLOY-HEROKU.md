@@ -2,7 +2,17 @@
 
 It should be as simple as `heroku push`, and that's what you do in regular development.
 
-BUT there is a one-time setup:
+## Heroku setup
+
+1. Add Heroku remote
+
+```bash
+git remote add heroku https://git.heroku.com/moochome.git
+```
+
+2. Create the database and seed it with password - see <../README.md>
+
+## CircleCI setup
 
 The app uses in in-memory database which is populated at startup time. Therefore when the data changes, it should be restarted. The data (currently) can only change when the `moocho` repo changes. Therefore one of the steps in the moocho repo's commit workflow restarts THIS APP.
 
