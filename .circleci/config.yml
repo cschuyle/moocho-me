@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  transform-and-upload-to-aws:
+    docker:
+      - image: cschuyle/moocho-ci
+    steps:
+      - checkout
+      - run:
+          name: Clone repository I depend on
+          command: |
+            git clone https://github.com/cschuyle/datagator.git
+      - run:
+          name: Generate trove JSON for all Troves
+          command: |
+            ./ci/bin/transform-all.sh
+      - run:
+          name: Upload Troves
+          command: |
+            ./ci/bin/upload-all.sh
+      - run:
+          name: Restart consumer app
+          command: |
+            # Set HEROKU_API_KEY env var, preferably to a key generated using `heroku authorizations:create`
+            heroku restart -a moocho-me-web
+
+workflows:
+  version: 2
+  pipeline:
+    jobs:
+      - transform-and-upload-to-aws
