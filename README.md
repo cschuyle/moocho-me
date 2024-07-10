@@ -22,7 +22,7 @@ If not using `direnv`, you can just fill in the blanks, copy the file to whateve
 ### Add Heroku remote
 
 ```bash
-git remote add heroku https://git.heroku.com/moochome.git
+git remote add heroku https://git.heroku.com/moocho-me-web.git
 ```
 
 ### Database
