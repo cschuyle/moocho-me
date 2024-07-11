@@ -4,7 +4,7 @@ import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 
-import {Form} from 'react-bootstrap';
+import {Form, InputGroup} from 'react-bootstrap';
 
 import TroveHits from "./TroveHits"
 
@@ -123,7 +123,7 @@ const SearchResults = (props: SearchResultsProps) => {
         return searchResults.map((searchResult: any) => {
             const hit = searchResult.primaryHit
             let mapped: any = mapSearchResult(hit)
-            mapped["secondaryHits"] = searchResult.secondaryHits.map((secondaryHit: any) =>{
+            mapped["secondaryHits"] = searchResult.secondaryHits.map((secondaryHit: any) => {
                 return mapSearchResult(secondaryHit)
             })
             return mapped
@@ -156,10 +156,15 @@ const SearchResults = (props: SearchResultsProps) => {
         doSearch(searchText);
     }
 
+    const handleSearchAll = (input: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setSearchText("*")
+        doSearch("*")
+    }
+
     const handleSearchTextChanged = (input: React.ChangeEvent<HTMLInputElement>) => {
-        input.preventDefault();
-        setSearchText(input.target.value);
-    };
+        input.preventDefault()
+        setSearchText(input.target.value)
+    }
 
     // THE MEAT
 
@@ -167,16 +172,28 @@ const SearchResults = (props: SearchResultsProps) => {
         <>
             <TroveHits troveHits={troveHits}/>
             <Form>
-                <Form.Control
-                    type="search"
-                    id="searchText"
-                    placeholder='search selected Troves'
-                    onChange={handleSearchTextChanged}
-                    onKeyDown={handleKeyDown}
-                />
-                <Button
-                    onClick={handleDoSearch}>Search
-                </Button>
+
+                <InputGroup>
+
+                    <Button
+                        onClick={handleDoSearch}>Search
+                    </Button>
+                    <Form.Control
+                        type="search"
+                        id="searchText"
+                        placeholder='search selected Troves'
+                        value={searchText}
+                        onChange={handleSearchTextChanged}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <Button
+                        variant="outline-secondary"
+                        onClick={handleSearchAll}
+                    >
+                        * (all)
+                    </Button>
+                </InputGroup>
+
             </Form>
 
             <Table bordered hover size="sm">
@@ -208,7 +225,7 @@ const SearchResults = (props: SearchResultsProps) => {
                 </tbody>
             </Table>
         </>
-    );
-};
+    )
+}
 
 export default SearchResults;
