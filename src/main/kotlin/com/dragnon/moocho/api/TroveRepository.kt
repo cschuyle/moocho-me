@@ -12,7 +12,7 @@ class TroveRepository(
     private val amazonS3Client: AmazonS3,
     private val objectMapper: ObjectMapper
 ) {
-
+    private val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)
     private val repo: MutableMap<String, Trove> = HashMap()
 
     init {
@@ -45,6 +45,7 @@ class TroveRepository(
     }
 
     private fun getTroveFromAws(troveDef: TroveDef): Trove {
+        logger.info("Loading trove: ${troveDef.id}")
         val s3Object = amazonS3Client.getObject(
             GetObjectRequest(
                 "moocho-test", "${troveDef.bucketPrefix}/${troveDef.id}"
