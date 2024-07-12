@@ -136,7 +136,7 @@ const TroveSelector = (props: TroveSelectorProps) => {
                         onKeyDown={handleKeyDown}
                     />
                 </InputGroup>
-                {! searchAllTrovesIsSet() &&
+                {!searchAllTrovesIsSet() &&
                     <Button
                         variant="outline-primary"
                         onClick={handleSelectSearchAllTroves}
@@ -146,7 +146,7 @@ const TroveSelector = (props: TroveSelectorProps) => {
                 }
             </Form>
 
-            {! searchAllTrovesIsSet() &&
+            {!searchAllTrovesIsSet() &&
                 <Form.Check // prettier-ignore
                     type="switch"
                     id="show-only-selected"

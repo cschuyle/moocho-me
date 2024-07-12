@@ -1,12 +1,12 @@
 import React from 'react';
-import { Badge } from 'react-bootstrap';
+import {Badge} from 'react-bootstrap';
 
 interface TroveHitsProps {
     troveHits: Array<any>
 }
 
 const TroveHits = (props: TroveHitsProps) => {
- 
+
     return (
         <>
             {props.troveHits.map(troveHit =>
