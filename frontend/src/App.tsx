@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 
 import './App.css';
-import TroveList from "./TroveList";
+import TroveSelector from "./TroveSelector";
 import TroveSummary from "./Trove";
 import SearchResults from './SearchResults';
 
@@ -78,7 +78,7 @@ const App = () => {
                 </Offcanvas.Header>
 
                 <Offcanvas.Body>
-                    <TroveList
+                    <TroveSelector
                         troves={troves}
                         selectedTroves={selectedTroves}
                         setSelectedTroves={setSelectedTroves}
