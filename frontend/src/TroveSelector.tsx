@@ -77,11 +77,9 @@ const TroveSelector = (props: TroveSelectorProps) => {
     // The way to encode troveIds in the state variable. Puke.
     const mangledTroveString = (troveId: string) => `~${troveId}~`
 
-    const isTroveSelected = (troveId: string) => {
-        const troveStr = mangledTroveString(troveId)
-        const ret = props.selectedTroves.indexOf(troveStr) >= 0
-        return ret
-    }
+    const isTroveSelected = (troveId: string) =>
+        props.selectedTroves.indexOf(mangledTroveString(troveId)) >= 0
+
 
     const handleTroveSelectionChanged = (_: any, troveId: string) => {
         const wasSelected = isTroveSelected(troveId)
@@ -96,9 +94,8 @@ const TroveSelector = (props: TroveSelectorProps) => {
 
     // PRIMARY TROVE - there can be only one and it must also be selected.
 
-    const isTrovePrimarySelected = (troveId: string) => {
-        return props.primaryTrove == troveId
-    }
+    const isTrovePrimarySelected = (troveId: string) =>
+        props.primaryTrove == troveId
 
     const handlePrimaryTroveSelectionChanged = (_: any, troveId: string) => {
         if (props.primaryTrove === troveId) {

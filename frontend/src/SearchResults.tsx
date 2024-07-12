@@ -127,9 +127,9 @@ const SearchResults = (props: SearchResultsProps) => {
         })
     }
 
-    function mapItemHit(hit: ItemHitFromServer): SearchResult {
+    function mapItemHit(hit: ItemHitFromServer, parentKey: string = ""): SearchResult {
         return {
-            key: hit.doc,
+            key: hit.doc + parentKey,
             score: Math.floor(hit.score * 100),
             title: hit.title,
             troveShortName: props.getTroveShortName(hit.troveId),
@@ -143,17 +143,17 @@ const SearchResults = (props: SearchResultsProps) => {
         };
     }
 
-    function mapSecondaryHits(secondaryHits: any) {
+    function mapSecondaryHits(secondaryHits: any, parentKey: string) {
         return secondaryHits.map((secondaryHit: any) => {
-            return mapItemHit(secondaryHit)
+            return mapItemHit(secondaryHit, parentKey)
         })
     }
 
     function mapSearchResults(searchResults: SearchResultFromServer[]): SearchResult[] {
         return searchResults.map((searchResult: SearchResultFromServer) => {
-            let mapped: SearchResult = mapItemHit(searchResult.primaryHit)
-            mapped["secondaryHits"] = mapSecondaryHits(searchResult.secondaryHits);
-            return mapped
+            let primaryHit: SearchResult = mapItemHit(searchResult.primaryHit)
+            primaryHit["secondaryHits"] = mapSecondaryHits(searchResult.secondaryHits, ""+primaryHit.key);
+            return primaryHit
         })
     }
 
@@ -177,11 +177,10 @@ const SearchResults = (props: SearchResultsProps) => {
         }
     };
 
-    const handleDoSearch = (e: React.ChangeEvent<any>) => {
+    const handleDoSearch = (_: React.ChangeEvent<any>) =>
         doSearch(searchText);
-    }
 
-    const handleSearchAll = (input: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleSearchAll = (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setSearchText("*")
         doSearch("*")
     }
@@ -239,7 +238,7 @@ const SearchResults = (props: SearchResultsProps) => {
                             <td>{item.title}</td>
                         </tr>
                         {item.secondaryHits!.map((secondary: SearchResult) => (
-                            <tr>
+                            <tr key={item.key}>
                                 <td>{Math.floor(secondary.score * 100)}%</td>
                                 <td>{secondary.troveShortName}</td>
                                 <td>{secondary.title}</td>

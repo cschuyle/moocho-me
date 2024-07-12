@@ -24,8 +24,7 @@ const arrayFrom = (encodedArray: string) => {
         return []
     }
     encodedArray = encodedArray.substring(1, encodedArray.length - 1)
-    const asArray = encodedArray.split("~~")
-    return asArray
+    return encodedArray.split("~~")
 }
 
 const mapTroveSummaries = (troveSummaries: TroveSummaryFromServer[]): TroveSummary[] => {
