@@ -3,8 +3,9 @@ import TroveSummary from "./Trove";
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import {InputGroup} from "react-bootstrap";
 
-interface TroveListProps {
+interface TroveSelectorProps {
     troves: Array<TroveSummary>
 
     selectedTroves: any // TODO Should this be state?
@@ -14,9 +15,10 @@ interface TroveListProps {
     setPrimaryTrove: any
 }
 
-const TroveList = (props: TroveListProps) => {
+const TroveSelector = (props: TroveSelectorProps) => {
     const [troveFilter, setTroveFilter]: [string, any] = useState('');
     const [filteredTroves, setFilteredTroves]: [TroveSummary[], any] = useState([]);
+    const [showOnlySelected, setShowOnlySelected]: [boolean, any] = useState(false);
 
     React.useEffect(() => {
         filterTroveList(troveFilter)
@@ -104,12 +106,19 @@ const TroveList = (props: TroveListProps) => {
         }
     }
 
+    const handleShowOnlySelectedChanged = () => {
+        setShowOnlySelected(!showOnlySelected)
+    }
+
     // THE MEAT
 
     return (
-        <div className="TroveList">
-            <div>
-                <Form onSubmit={onFormSubmit}>
+        <>
+            <Form onSubmit={onFormSubmit}>
+                <InputGroup>
+                    <Button
+                        onClick={handleFilterTroves}>filter
+                    </Button>
                     <Form.Control
                         type="search"
                         id="troveFilter"
@@ -117,20 +126,26 @@ const TroveList = (props: TroveListProps) => {
                         onChange={handleTroveFilterChanged}
                         onKeyDown={handleKeyDown}
                     />
-                    <Button
-                        onClick={handleFilterTroves}>filter
-                    </Button>
-                </Form>
-            </div>
+                </InputGroup>
+            </Form>
+            <Form.Check // prettier-ignore
+                type="switch"
+                id="show-only-selecte"
+                label="Show only selected Troves"
+                checked={showOnlySelected}
+                onChange={handleShowOnlySelectedChanged}
+            />
             {filteredTroves.map((trove) => (
                 <div>
-                    <Form.Check
-                        key={trove.id}
-                        inline
-                        checked={isTroveSelected(trove.id)}
-                        label={trove.name}
-                        onChange={(e: any) => handleTroveSelectionChanged(e, trove.id)}
-                    />
+                    {(!showOnlySelected || isTroveSelected(trove.id)) &&
+                        <Form.Check
+                            key={trove.id}
+                            inline
+                            checked={isTroveSelected(trove.id)}
+                            label={trove.name}
+                            onChange={(e: any) => handleTroveSelectionChanged(e, trove.id)}
+                        />
+                    }
                     {isTroveSelected(trove.id) &&
                         <Form.Check
                             key={"primary-selector-" + trove.id}
@@ -143,8 +158,8 @@ const TroveList = (props: TroveListProps) => {
                     }
                 </div>
             ))}
-        </div>
+        </>
     );
 };
 
-export default TroveList;
+export default TroveSelector;
