@@ -81,7 +81,7 @@ const TroveSelector = (props: TroveSelectorProps) => {
         return props.selectedTroves.indexOf(troveStr) >= 0
     }
 
-    const handleTroveSelectionChanged = (e: any, troveId: string) => {
+    const handleTroveSelectionChanged = (_: any, troveId: string) => {
         const wasSelected = isTroveSelected(troveId)
         let newSelectedTroves = "" + props.selectedTroves
         if (wasSelected) {
@@ -98,7 +98,7 @@ const TroveSelector = (props: TroveSelectorProps) => {
         return props.primaryTrove == troveId
     }
 
-    const handlePrimaryTroveSelectionChanged = (e: any, troveId: string) => {
+    const handlePrimaryTroveSelectionChanged = (_: any, troveId: string) => {
         if (props.primaryTrove === troveId) {
             props.setPrimaryTrove("")
         } else {
@@ -108,6 +108,8 @@ const TroveSelector = (props: TroveSelectorProps) => {
 
     const handleShowOnlySelectedChanged = () => {
         setShowOnlySelected(!showOnlySelected)
+        setTroveFilter("")
+        filterTroveList(troveFilter);
     }
 
     const handleSelectSearchAllTroves = () => {

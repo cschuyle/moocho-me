@@ -39,7 +39,7 @@ const App = () => {
     useEffect(() => {
             fetchTroves().then(theTroves => {
                 setTroves(theTroves)
-                theTroves.map((theTrove: any) => {
+                theTroves.map((theTrove: TroveSummary) => {
                     troveShortNameMap.set("" + theTrove.id, "" + theTrove.shortName)
                 })
                 setTroveShortNameMap(troveShortNameMap)

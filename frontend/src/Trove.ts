@@ -3,4 +3,5 @@ export default interface TroveSummary {
     name: string;
     shortName: string;
     itemCount: number;
+    hitCount: number
 }

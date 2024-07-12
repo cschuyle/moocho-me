@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import {Form, InputGroup} from 'react-bootstrap';
 
 import SelectedTroveSummary from "./SelectedTroveSummary"
+import TroveSummary from "./Trove";
 
 /*
 GET
@@ -57,21 +58,25 @@ interface SearchResultsProps {
     getTroveShortName: any
 }
 
-// TODO How do I make a new one of these? - using `any` at the moment.
-// interface TroveHit {
-//     troveId: string;
-//     shortName: string;
-//     hitCount: number;
-//     totalCount: number;
-// }
+export interface SearchResult {
+    secondaryHits: SearchResult[];
+    key: React.Key | null | undefined;
+    troveId: string;
+    troveShortName: string;
+    title: string;
+    score: number;
+    totalCount: number;
+    hitCount: number;
+    shortName: string;
+}
 
 const SearchResults = (props: SearchResultsProps) => {
 
     // SEARCH
 
     const [searchText, setSearchText]: [string, any] = useState('');
-    const [resultItems, setResultItems]: [Array<any>, any] = useState([]);
-    const [troveHits, setTroveHits]: [Array<any>, any] = useState([]);
+    const [resultItems, setResultItems]: [Array<SearchResult>, any] = useState([]);
+    const [troveHits, setTroveHits]: [Array<TroveSummary>, any] = useState([]);
 
     function getSelectedTrovesQuery() {
         return (props.selectedTroves.length === 0)
@@ -96,14 +101,14 @@ const SearchResults = (props: SearchResultsProps) => {
         }
     }
 
-    function mapTroveHits(troveHits: any) {
-        return troveHits.map((troveHit: any) => {
-            if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
+    function mapTroveHits(troveHits: TroveSummary[]) {
+        return troveHits.map((troveHit: TroveSummary) => {
+            if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.id)) {
                 return {
-                    troveId: troveHit.troveId,
+                    troveId: troveHit.id,
                     shortName: troveHit.shortName,
                     hitCount: troveHit.hitCount,
-                    totalCount: troveHit.totalCount
+                    totalCount: troveHit.itemCount
                 }
             }
             return null
@@ -119,7 +124,7 @@ const SearchResults = (props: SearchResultsProps) => {
         };
     }
 
-    function mapSearchResults(searchResults: any): any {
+    function mapSearchResults(searchResults: SearchResult[]): any {
         return searchResults.map((searchResult: any) => {
             const hit = searchResult.primaryHit
             let mapped: any = mapSearchResult(hit)
@@ -206,17 +211,17 @@ const SearchResults = (props: SearchResultsProps) => {
                 </thead>
                 <tbody>
                 {/*TODO: Keys for rows*/}
-                {resultItems.map(item => (
+                {resultItems.map((item: SearchResult) => (
                     <>
                         <tr className="table-secondary" key={item.key}>
                             <td>{item.score}%</td>
                             <td>{item.troveShortName}</td>
                             <td>{item.title}</td>
                         </tr>
-                        {item.secondaryHits.map((secondary: any) => (
+                        {item.secondaryHits!.map((secondary: SearchResult) => (
                             <tr>
                                 <td>{Math.floor(secondary.score * 100)}%</td>
-                                <td>{secondary.troveId}</td>
+                                <td>{secondary.troveShortName}</td>
                                 <td>{secondary.title}</td>
                             </tr>
                         ))}
