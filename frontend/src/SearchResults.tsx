@@ -7,7 +7,13 @@ import Button from 'react-bootstrap/Button';
 import {Form, InputGroup} from 'react-bootstrap';
 
 import SelectedTroveSummary from "./SelectedTroveSummary"
-import TroveSummary from "./Trove";
+
+import {
+    ItemHitFromServer,
+    QueryResultFromServer,
+    SearchResultFromServer,
+    TroveHitFromServer
+} from "./ServerData";
 
 /*
 GET
@@ -51,7 +57,6 @@ RESPONSE
 }
 */
 
-// THis is wrong. It should be the list of troves.
 interface SearchResultsProps {
     selectedTroves: string[]
     primaryTrove: string
@@ -65,9 +70,15 @@ export interface SearchResult {
     troveShortName: string;
     title: string;
     score: number;
-    totalCount: number;
-    hitCount: number;
     shortName: string;
+}
+
+export interface TroveSummary {
+    troveId: string;
+    name: string;
+    shortName: string;
+    itemCount: number;
+    hitCount: number
 }
 
 const SearchResults = (props: SearchResultsProps) => {
@@ -75,8 +86,8 @@ const SearchResults = (props: SearchResultsProps) => {
     // SEARCH
 
     const [searchText, setSearchText]: [string, any] = useState('');
-    const [resultItems, setResultItems]: [Array<SearchResult>, any] = useState([]);
-    const [troveHits, setTroveHits]: [Array<TroveSummary>, any] = useState([]);
+    const [resultItems, setResultItems]: [SearchResult[], any] = useState([]);
+    const [troveHits, setTroveHits]: [TroveSummary[], any] = useState([]);
 
     function getSelectedTrovesQuery() {
         return (props.selectedTroves.length === 0)
@@ -101,48 +112,57 @@ const SearchResults = (props: SearchResultsProps) => {
         }
     }
 
-    function mapTroveHits(troveHits: TroveSummary[]) {
-        return troveHits.map((troveHit: TroveSummary) => {
-            if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.id)) {
+    function mapTroveHits(troveHits: TroveHitFromServer[]): (TroveSummary | null)[] {
+        return troveHits.map((troveHit: TroveHitFromServer) => {
+            if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
                 return {
-                    troveId: troveHit.id,
+                    troveId: troveHit.troveId,
+                    name: troveHit.name,
                     shortName: troveHit.shortName,
                     hitCount: troveHit.hitCount,
-                    totalCount: troveHit.itemCount
+                    itemCount: troveHit.totalCount
                 }
             }
             return null
-        });
+        })
     }
 
-    function mapSearchResult(hit: any) {
+    function mapItemHit(hit: ItemHitFromServer): SearchResult {
         return {
             key: hit.doc,
             score: Math.floor(hit.score * 100),
             title: hit.title,
-            troveShortName: props.getTroveShortName(hit.troveId)
+            troveShortName: props.getTroveShortName(hit.troveId),
+            troveId: hit.troveId,
+            shortName: props.getTroveShortName(hit.troveId),
+
+            // Blecch. Just mirror the data structures in the server for chrissakes
+            // totalCount: -1,
+            // hitCount: -1,
+            secondaryHits: []
         };
     }
 
-    function mapSearchResults(searchResults: SearchResult[]): any {
-        return searchResults.map((searchResult: any) => {
-            const hit = searchResult.primaryHit
-            let mapped: any = mapSearchResult(hit)
-            mapped["secondaryHits"] = searchResult.secondaryHits.map((secondaryHit: any) => {
-                return mapSearchResult(secondaryHit)
-            })
+    function mapSecondaryHits(secondaryHits: any) {
+        return secondaryHits.map((secondaryHit: any) => {
+            return mapItemHit(secondaryHit)
+        })
+    }
+
+    function mapSearchResults(searchResults: SearchResultFromServer[]): SearchResult[] {
+        return searchResults.map((searchResult: SearchResultFromServer) => {
+            let mapped: SearchResult = mapItemHit(searchResult.primaryHit)
+            mapped["secondaryHits"] = mapSecondaryHits(searchResult.secondaryHits);
             return mapped
         })
     }
 
     const doSearch = (searchText: string) => {
-        doSearchRequest(searchText).then(response => {
+        doSearchRequest(searchText).then((response: QueryResultFromServer) => {
+            setTroveHits(mapTroveHits(response.troveHits)
+                .filter((troveHit: any) => troveHit !== null))
+
             setResultItems(mapSearchResults(response.searchResults))
-
-            const theTroveHits = mapTroveHits(response.troveHits)
-                .filter((troveHit: any) => troveHit !== null)
-
-            setTroveHits(theTroveHits)
         });
     }
 

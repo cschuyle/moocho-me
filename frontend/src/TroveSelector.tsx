@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-import TroveSummary from "./Trove";
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import {InputGroup} from "react-bootstrap";
+import {TroveSummary} from "./SearchResults";
 
 interface TroveSelectorProps {
-    troves: Array<TroveSummary>
+    troves: TroveSummary[]
 
     selectedTroves: any // TODO Should this be state?
     setSelectedTroves: any
@@ -40,9 +40,10 @@ const TroveSelector = (props: TroveSelectorProps) => {
             setFilteredTroves(props.troves)
             return
         }
-        const filtered = props.troves.filter(trove =>
-            trove.name.toLowerCase().includes(theFilter.toLowerCase()) ||
-            trove.id.toLowerCase().includes(troveFilter.toLowerCase())
+        const filtered = props.troves.filter(trove => {
+                return trove.name.toLowerCase().includes(theFilter.toLowerCase()) ||
+                    trove.troveId.toLowerCase().includes(troveFilter.toLowerCase())
+            }
         )
         setFilteredTroves(filtered)
     }
@@ -74,20 +75,21 @@ const TroveSelector = (props: TroveSelectorProps) => {
     // TROVE SELECTION (checkboxes)
 
     // The way to encode troveIds in the state variable. Puke.
-    const troveString = (troveId: string) => `~${troveId}~`
+    const mangledTroveString = (troveId: string) => `~${troveId}~`
 
     const isTroveSelected = (troveId: string) => {
-        const troveStr = troveString(troveId)
-        return props.selectedTroves.indexOf(troveStr) >= 0
+        const troveStr = mangledTroveString(troveId)
+        const ret = props.selectedTroves.indexOf(troveStr) >= 0
+        return ret
     }
 
     const handleTroveSelectionChanged = (_: any, troveId: string) => {
         const wasSelected = isTroveSelected(troveId)
         let newSelectedTroves = "" + props.selectedTroves
         if (wasSelected) {
-            newSelectedTroves = newSelectedTroves.replace(troveString(troveId), "");
+            newSelectedTroves = newSelectedTroves.replace(mangledTroveString(troveId), "");
         } else {
-            newSelectedTroves += troveString(troveId)
+            newSelectedTroves += mangledTroveString(troveId)
         }
         props.setSelectedTroves(newSelectedTroves)
     }
@@ -162,23 +164,23 @@ const TroveSelector = (props: TroveSelectorProps) => {
 
             {filteredTroves.map((trove) => (
                 <div>
-                    {(!showOnlySelected || isTroveSelected(trove.id)) &&
+                    {(!showOnlySelected || isTroveSelected(trove.troveId)) &&
                         <Form.Check
-                            key={trove.id}
+                            key={trove.troveId}
                             inline
-                            checked={isTroveSelected(trove.id)}
+                            checked={isTroveSelected(trove.troveId)}
                             label={trove.name}
-                            onChange={(e: any) => handleTroveSelectionChanged(e, trove.id)}
+                            onChange={(e: any) => handleTroveSelectionChanged(e, trove.troveId)}
                         />
                     }
-                    {isTroveSelected(trove.id) &&
+                    {isTroveSelected(trove.troveId) &&
                         <Form.Check
-                            key={"primary-selector-" + trove.id}
+                            key={"primary-selector-" + trove.troveId}
                             type="switch"
                             inline
                             reverse
-                            checked={isTrovePrimarySelected(trove.id)}
-                            onChange={(e: any) => handlePrimaryTroveSelectionChanged(e, trove.id)}
+                            checked={isTrovePrimarySelected(trove.troveId)}
+                            onChange={(e: any) => handlePrimaryTroveSelectionChanged(e, trove.troveId)}
                         />
                     }
                 </div>

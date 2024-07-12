@@ -6,10 +6,10 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 
 import './App.css';
 import TroveSelector from "./TroveSelector";
-import TroveSummary from "./Trove";
-import SearchResults from './SearchResults';
+import SearchResults, {TroveSummary} from './SearchResults';
+import {TroveSummaryFromServer} from "./ServerData";
 
-const fetchTroves = async () => {
+const fetchTroveSummaries = async () => {
     try {
         const {data: response} = await axios.get("/troves/summary");
         return response
@@ -28,19 +28,31 @@ const arrayFrom = (encodedArray: string) => {
     return asArray
 }
 
+const mapTroveSummaries = (troveSummaries: TroveSummaryFromServer[]): TroveSummary[] => {
+    return troveSummaries.map(troveSummary => {
+        return {
+            troveId: troveSummary.troveId,
+            name: troveSummary.name,
+            shortName: troveSummary.shortName,
+            itemCount: troveSummary.itemCount,
+            hitCount: -1
+        }
+    })
+}
+
 const App = () => {
 
-    const [troves, setTroves]: [TroveSummary[], any] = useState([])
+    const [troveSummaries, setTroveSummaries]: [TroveSummary[], any] = useState([])
     const [selectedTroves, setSelectedTroves]: [string, any] = useState("")
     const [primaryTrove, setPrimaryTrove]: [string, any] = useState("")
     const [troveShortNameMap, setTroveShortNameMap]: [Map<string, string>, any] =
         useState(new Map<string, string>())
 
     useEffect(() => {
-            fetchTroves().then(theTroves => {
-                setTroves(theTroves)
-                theTroves.map((theTrove: TroveSummary) => {
-                    troveShortNameMap.set("" + theTrove.id, "" + theTrove.shortName)
+            fetchTroveSummaries().then(theTroveSummaries => {
+                setTroveSummaries(mapTroveSummaries(theTroveSummaries))
+                theTroveSummaries.map((theTrove: TroveSummaryFromServer) => {
+                    troveShortNameMap.set("" + theTrove.troveId, "" + theTrove.shortName)
                 })
                 setTroveShortNameMap(troveShortNameMap)
             })
@@ -79,7 +91,7 @@ const App = () => {
 
                 <Offcanvas.Body>
                     <TroveSelector
-                        troves={troves}
+                        troves={troveSummaries}
                         selectedTroves={selectedTroves}
                         setSelectedTroves={setSelectedTroves}
                         primaryTrove={primaryTrove}

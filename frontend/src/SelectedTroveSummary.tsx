@@ -1,9 +1,9 @@
 import React from 'react';
 import {Badge} from 'react-bootstrap';
-import TroveSummary from "./Trove";
+import {TroveSummary} from "./SearchResults";
 
 interface SelectedTroveSummaryProps {
-    troveHits: Array<TroveSummary>
+    troveHits: TroveSummary[]
 }
 
 const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
@@ -18,7 +18,7 @@ const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
     }
 
     // Sort alphabetically
-    const trovesWithoutHits: () => any[] = () => {
+    const trovesWithoutHits: () => TroveSummary[] = () => {
         return props.troveHits.filter(troveHit => {
             return troveHit.hitCount === 0
         }).sort((th1: any, th2: any) => {
@@ -28,7 +28,7 @@ const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
 
     return (
         <>
-            {trovesWithHits().map(troveHit =>
+            {trovesWithHits().map((troveHit: TroveSummary) =>
                 <Badge bg="primary">
                     {troveHit.shortName} ({troveHit.hitCount}/{troveHit.itemCount})
                 </Badge>
@@ -36,7 +36,7 @@ const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
 
             {trovesWithoutHits().map(troveHit =>
                 <Badge bg="secondary">
-                    {troveHit.shortName} ({troveHit.hitCount}/{troveHit.totalCount})
+                    {troveHit.shortName} ({troveHit.hitCount}/{troveHit.itemCount})
                 </Badge>
             )}
         </>

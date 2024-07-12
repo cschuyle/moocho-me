@@ -82,7 +82,7 @@ data class Trove(
 }
 
 data class TroveSummary(
-    val id: String,
+    val troveId: String,
     val name: String,
     val shortName: String,
     val itemCount: Int
