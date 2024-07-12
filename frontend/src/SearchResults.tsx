@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 
 import {Form, InputGroup} from 'react-bootstrap';
 
-import TroveHits from "./TroveHits"
+import SelectedTroveSummary from "./SelectedTroveSummary"
 
 /*
 GET
@@ -170,7 +170,7 @@ const SearchResults = (props: SearchResultsProps) => {
 
     return (
         <>
-            <TroveHits troveHits={troveHits}/>
+            <SelectedTroveSummary troveHits={troveHits}/>
             <Form>
 
                 <InputGroup>

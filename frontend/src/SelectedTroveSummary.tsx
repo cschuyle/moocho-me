@@ -1,11 +1,11 @@
 import React from 'react';
 import {Badge} from 'react-bootstrap';
 
-interface TroveHitsProps {
+interface SelectedTroveSummaryProps {
     troveHits: Array<any>
 }
 
-const TroveHits = (props: TroveHitsProps) => {
+const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
 
     return (
         <>
@@ -18,4 +18,4 @@ const TroveHits = (props: TroveHitsProps) => {
     )
 }
 
-export default TroveHits
+export default SelectedTroveSummary
