@@ -110,7 +110,16 @@ const TroveSelector = (props: TroveSelectorProps) => {
         setShowOnlySelected(!showOnlySelected)
     }
 
+    const handleSelectSearchAllTroves = () => {
+        props.setPrimaryTrove("")
+        props.setSelectedTroves("")
+    }
+
     // THE MEAT
+
+    function searchAllTrovesIsSet() {
+        return props.selectedTroves === "";
+    }
 
     return (
         <>
@@ -127,14 +136,28 @@ const TroveSelector = (props: TroveSelectorProps) => {
                         onKeyDown={handleKeyDown}
                     />
                 </InputGroup>
+                {! searchAllTrovesIsSet() &&
+                    <Button
+                        variant="outline-primary"
+                        onClick={handleSelectSearchAllTroves}
+                    >
+                        Search all troves
+                    </Button>
+                }
             </Form>
-            <Form.Check // prettier-ignore
-                type="switch"
-                id="show-only-selecte"
-                label="Show only selected Troves"
-                checked={showOnlySelected}
-                onChange={handleShowOnlySelectedChanged}
-            />
+
+            {! searchAllTrovesIsSet() &&
+                <Form.Check // prettier-ignore
+                    type="switch"
+                    id="show-only-selected"
+                    label="Show only selected Troves"
+                    checked={showOnlySelected}
+                    onChange={handleShowOnlySelectedChanged}
+                />
+            }
+            {searchAllTrovesIsSet() &&
+                <p>All troves will be searched. To limit search, select troves to search.</p>}
+
             {filteredTroves.map((trove) => (
                 <div>
                     {(!showOnlySelected || isTroveSelected(trove.id)) &&
