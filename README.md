@@ -21,6 +21,38 @@ If you use `direnv`, copy `envrc-template` to `.envrc` and fill in the blanks.
 
 If not using `direnv`, you can just fill in the blanks, copy the file to whatever you want, and source it.
 
+### Quickstart - local DB
+
+_Caveat_: This is pretty rickety at the moment
+
+This only needs to be done once
+```bash
+# Create and start your local database
+database/start-local-db.sh
+```
+
+In the backend window
+```bash
+## Kill any running server
+#kill $(ps gua|grep "moocho-me-web/gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain bootRun"| awk '{print $2}')
+
+# Build and run the server
+gw bootRun
+
+# wait for server to actually start - TODO this should poll a healthcheck endpoint
+sleep 5
+
+# login to the server (these are local-database creds)
+curl -d j_username=guest -d j_password=password -L http://localhost:8080/app/j_spring_security_check
+```
+
+In the frontend window
+```bash
+# start the frontend
+cd frontend
+yarn start
+```
+
 ### Add Heroku remote
 
 ```bash

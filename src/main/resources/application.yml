@@ -1,5 +1,9 @@
 spring:
   application.name: moocho-me-web
+server:
+  servlet:
+    session:
+      timeout: 240m
 #  datasource:
 #    driverClassName: org.postgresql.Driver
 #  main.web-application-type: SERVLET

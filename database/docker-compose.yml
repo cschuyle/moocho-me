@@ -1,0 +1,12 @@
+services:
+  moochome-psql:
+    image: postgres
+    container_name: moochome-psql
+    ports:
+      - 5432:5432
+    volumes:
+      - ${DB_DIR}/postgres-data/:/var/lib/postgresql/data
+      - ${DB_DIR}/scripts:/var/database-scripts/
+    environment:
+      POSTGRES_PASSWORD: password
+

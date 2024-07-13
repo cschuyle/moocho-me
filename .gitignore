@@ -57,3 +57,6 @@ bin/
 *.iws
 *.iml
 *.ipr
+
+# log files from dev
+bootrun.log
