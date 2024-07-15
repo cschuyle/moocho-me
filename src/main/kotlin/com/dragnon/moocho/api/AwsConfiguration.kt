@@ -26,8 +26,8 @@ class AwsConfiguration {
     fun amazonS3Client(
         @Value("\${aws.access.key}") accessKey: String,
         @Value("\${aws.secret.key}") secretKey: String,
-        @Value("\$aws.region:#{null}") region: String?,
-        @Value("\$aws.endpoint.url:#{null}") endpoint: String?
+        @Value("\${aws.region:#{null}}") region: String?,
+        @Value("\${aws.endpoint.url:#{null}}") endpoint: String?
     ): AmazonS3 {
         val creds = AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey))
         if (endpoint == null) {
