@@ -38,6 +38,7 @@ class TroveRepository(
     }
 
     private fun getData(): MoochoDataRoot {
+        logger.info("Loading [bucket: ${bucketName}] Troves Catalog")
         val trovesObject = amazonS3Client.getObject(
             GetObjectRequest(
                 bucketName, "troves"
@@ -47,7 +48,7 @@ class TroveRepository(
     }
 
     private fun getTroveFromAws(troveDef: TroveDef): Trove {
-        logger.info("Loading trove: ${troveDef.id}")
+        logger.info("Loading [bucket: ${bucketName}] Trove: ${troveDef.id}")
         val s3Object = amazonS3Client.getObject(
             GetObjectRequest(
                 bucketName, "${troveDef.bucketPrefix}/${troveDef.id}"
