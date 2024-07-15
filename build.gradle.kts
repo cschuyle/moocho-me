@@ -39,9 +39,9 @@ dependencies {
 //    implementation("org.ehcache:ehcache:3.10.8")
 
     // Lucene
-    implementation("org.apache.lucene:lucene-core:9.10.0")
-    implementation("org.apache.lucene:lucene-analysis-common:9.10.0")
-    implementation("org.apache.lucene:lucene-queryparser:9.10.0")
+    implementation("org.apache.lucene:lucene-core:9.11.1")
+    implementation("org.apache.lucene:lucene-analysis-common:9.11.1")
+    implementation("org.apache.lucene:lucene-queryparser:9.11.1")
 
     // AWS
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.761")
