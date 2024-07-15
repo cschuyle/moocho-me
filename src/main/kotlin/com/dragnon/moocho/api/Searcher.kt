@@ -33,7 +33,7 @@ class Searcher(troves: List<Trove>) {
                 val maxScore = scoreDocs.map { it.score.toDouble() }.maxOrNull()!!
                 scoreDocs
                     .forEach { scoreDoc ->
-                        val hitDoc = isearcher.doc(scoreDoc.doc)
+                        val hitDoc = isearcher.storedFields().document(scoreDoc.doc)
                         val hitTroveDocument = TroveDocument(hitDoc.get("troveId"), hitDoc.get("title"))
                         val score: Double = scoreDoc.score.toDouble() / maxScore
                         searchResults.add(

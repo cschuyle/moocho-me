@@ -67,9 +67,9 @@ class DuplicateFinder() {
             if (scoreDocs.isNotEmpty()) {
                 val maxScore = scoreDocs.map { it.score.toDouble() }.maxOrNull()!!
                 scoreDocs
-                    .filter { scoreDoc -> primaryTroves.contains(isearcher.doc(scoreDoc.doc)["troveId"]) }
+                    .filter { scoreDoc -> primaryTroves.contains(isearcher.storedFields().document(scoreDoc.doc)["troveId"]) }
                     .forEach { scoreDoc ->
-                        val hitDoc = isearcher.doc(scoreDoc.doc)
+                        val hitDoc = isearcher.storedFields().document(scoreDoc.doc)
                         val hitTroveDocument = TroveDocument(hitDoc.get("troveId"), hitDoc.get("title"))
                         val score: Double = scoreDoc.score.toDouble() / maxScore
 
@@ -135,7 +135,7 @@ class DuplicateFinder() {
                 .filter { scoreDoc -> scoreDoc.doc != primaryHit.doc }
                 .filter { scoreDoc -> scoreDoc.score.toDouble() > minDupScore }
                 .map { scoreDoc ->
-                    val hitDoc = isearcher.doc(scoreDoc.doc)
+                    val hitDoc = isearcher.storedFields().document(scoreDoc.doc)
                     val hitTroveDocument = TroveDocument(hitDoc.get("troveId"), hitDoc.get("title"))
                     val score: Double = scoreDoc.score.toDouble()
                     ItemHit(scoreDoc.doc, score, hitTroveDocument.troveId, hitTroveDocument.title)
