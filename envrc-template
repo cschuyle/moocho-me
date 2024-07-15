@@ -1,13 +1,24 @@
 # Set to false to disable Spring Security (OAuth2)
-# export ENABLE_SECURITY=false
+#export ENABLE_SECURITY=false
 
-export AWS_ACCESS_KEY='...'
+# -------------------------------------------------------------------------------------------------------------------
+# AWS (or local blobstore) config
+export AWS_ACCESS_KEY=''
 export AWS_REGION='us-west-2'
-export AWS_SECRET_KEY='...'
+export AWS_SECRET_KEY=''
 
-# Modify the below credentials to connect to a non-local PSQL.
-# Currently the prod DB is a heroku PostgreSQL addon - log in and look for the creds
-host='localhost'
+## Minio "mocks" AWS S3 for local dev (see ./blob-store)
+# The following AWS env var needs to be set for local dev with minio:
+export AWS_ENDPOINT_URL=http://localhost:9000
+# These gotta match the above:
+export MINIO_ROOT_USER='' # AWS_ACCESS_KEY
+export MINIO_ROOT_PASSWORD='' # AWS_SECRET_KEY
+
+# -------------------------------------------------------------------------------------------------------------------
+# Database config
+# [Currently the prod DB is supplied as a heroku addon - log in and look for the prod creds]
+# The following are for the local DB (see ./database)
+host=localhost
 database='postgres'
 user='postgres'
 port=5432
@@ -17,5 +28,15 @@ export SPRING_DATASOURCE_URL="jdbc:postgresql://$host/$database"
 export SPRING_DATASOURCE_USERNAME="$user"
 export SPRING_DATASOURCE_PASSWORD="$password"
 
-# This is the DB URI - not for Spring, but for other stuff
+# This is the DB URI - not for Spring, but for other apps this is the standard
 export URI="postgres://$user:$password@$host:$port/$database"
+
+# -------------------------------------------------------------------------------------------------------------------
+# The following make stuff in ./database and ./blob-store put their persistent volumes in those directories.
+# So if you edit these then you can have their volumes in some other dirs.
+
+# Local DB persistent volume
+export DB_DIR="$(pwd)/database"
+
+# Local blobstore (S3 prod, Minio local) persistent volume
+export BLOBSTORE_DIR="$(pwd)/blob-store"

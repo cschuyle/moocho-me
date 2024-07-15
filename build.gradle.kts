@@ -44,7 +44,7 @@ dependencies {
     implementation("org.apache.lucene:lucene-queryparser:9.10.0")
 
     // AWS
-    implementation("com.amazonaws:aws-java-sdk-s3:1.12.732")
+    implementation("com.amazonaws:aws-java-sdk-s3:1.12.761")
 
     // Local Dev
     //    runtimeOnly("com.h2database:h2")

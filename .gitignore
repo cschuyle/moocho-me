@@ -49,8 +49,7 @@ bin/
 \#*#
 
 # direnv
-.envrc
-
+.envrc*
 
 # IntelliJ
 .idea

@@ -1,0 +1,1 @@
+podman run -p 9000:9000 -p 9001:9001 -e "MINIO_ROOT_USER=${MINIO_ROOT_USER}" -e "MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}" -v ${BLOBSTORE_DIR}/buckets/moocho-dev:/data  quay.io/minio/minio server /data --console-address ":9001"

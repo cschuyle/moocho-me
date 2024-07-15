@@ -4,7 +4,6 @@ set -o pipefail
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 script_file=$(basename "$0")
 
-set +e
 
 docker-compose up --detach
 # God I hate this
