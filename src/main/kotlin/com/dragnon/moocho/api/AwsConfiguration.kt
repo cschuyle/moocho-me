@@ -23,20 +23,23 @@ class AwsConfiguration {
     fun amazonS3Client(
         @Value("\${aws.access.key}") accessKey: String,
         @Value("\${aws.secret.key}") secretKey: String,
-        @Value("\${aws.region}") region: String?,
+        @Value("\${aws.region:null}") region: String?,
         @Value("\${aws.endpoint.url:null}") endpoint: String?
     ): AmazonS3 {
-        val awsStaticCredentialsProvider = AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey))
+        val creds = AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey))
         if (endpoint == null) {
+            if (region == null) {
+                throw IllegalStateException("Property aws.endpoint.url not provided, therefore must provide aws.region, which is not provided")
+            }
             return AmazonS3ClientBuilder
                 .standard()
-                .withCredentials(awsStaticCredentialsProvider)
+                .withCredentials(creds)
                 .withRegion(region)
                 .build()
         } else {
             return AmazonS3ClientBuilder
                 .standard()
-                .withCredentials(awsStaticCredentialsProvider)
+                .withCredentials(creds)
                 .withEndpointConfiguration(AwsClientBuilder.EndpointConfiguration(endpoint, ""))
                 .withPathStyleAccessEnabled(true)
                 .build()
