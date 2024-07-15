@@ -1,5 +1,10 @@
 # Set to false to disable Spring Security (OAuth2)
-#export ENABLE_SECURITY=false
+export ENABLE_SECURITY=false
+
+# dev
+export MOOCHO_BUCKET_NAME=moocho-dev
+# prod
+#export MOOCHO_BUCKET_NAME=moocho-test
 
 # -------------------------------------------------------------------------------------------------------------------
 # AWS (or local blobstore) config
@@ -10,7 +15,7 @@ export AWS_SECRET_KEY=''
 ## Minio "mocks" AWS S3 for local dev (see ./blob-store)
 # The following AWS env var needs to be set for local dev with minio:
 export AWS_ENDPOINT_URL=http://localhost:9000
-# These gotta match the above:
+# [for utils, not server] These gotta match the above:
 export MINIO_ROOT_USER='' # AWS_ACCESS_KEY
 export MINIO_ROOT_PASSWORD='' # AWS_SECRET_KEY
 
@@ -28,12 +33,14 @@ export SPRING_DATASOURCE_URL="jdbc:postgresql://$host/$database"
 export SPRING_DATASOURCE_USERNAME="$user"
 export SPRING_DATASOURCE_PASSWORD="$password"
 
-# This is the DB URI - not for Spring, but for other apps this is the standard
+# [for utils, not server] This is the DB URI - for non-Spring apps this is the standard format
 export URI="postgres://$user:$password@$host:$port/$database"
 
 # -------------------------------------------------------------------------------------------------------------------
 # The following make stuff in ./database and ./blob-store put their persistent volumes in those directories.
 # So if you edit these then you can have their volumes in some other dirs.
+
+# [for utils, not server]
 
 # Local DB persistent volume
 export DB_DIR="$(pwd)/database"

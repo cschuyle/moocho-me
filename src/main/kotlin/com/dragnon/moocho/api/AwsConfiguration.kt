@@ -2,7 +2,7 @@ package com.dragnon.moocho.api
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
+import com.amazonaws.client.builder.AwsClientBuilder
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -23,11 +23,23 @@ class AwsConfiguration {
     fun amazonS3Client(
         @Value("\${aws.access.key}") accessKey: String,
         @Value("\${aws.secret.key}") secretKey: String,
-        @Value("\${aws.region}") region: String
+        @Value("\${aws.region}") region: String?,
+        @Value("\${aws.endpoint.url:null}") endpoint: String?
     ): AmazonS3 {
-        val creds = BasicAWSCredentials(accessKey, secretKey)
-        return AmazonS3ClientBuilder.standard().withCredentials(AWSStaticCredentialsProvider(creds))
-            .withRegion(region)
-            .build()
+        val awsStaticCredentialsProvider = AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey))
+        if (endpoint == null) {
+            return AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(awsStaticCredentialsProvider)
+                .withRegion(region)
+                .build()
+        } else {
+            return AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(awsStaticCredentialsProvider)
+                .withEndpointConfiguration(AwsClientBuilder.EndpointConfiguration(endpoint, ""))
+                .withPathStyleAccessEnabled(true)
+                .build()
+        }
     }
 }

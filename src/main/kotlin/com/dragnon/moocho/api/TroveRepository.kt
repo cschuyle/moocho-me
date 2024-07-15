@@ -5,12 +5,14 @@ import com.amazonaws.services.s3.model.GetObjectRequest
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 
 @Repository
 class TroveRepository(
     private val amazonS3Client: AmazonS3,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    @Value("\${moocho.bucket.name}") private val bucketName: String,
 ) {
     private val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)
     private val repo: MutableMap<String, Trove> = HashMap()
@@ -38,7 +40,7 @@ class TroveRepository(
     private fun getData(): MoochoDataRoot {
         val trovesObject = amazonS3Client.getObject(
             GetObjectRequest(
-                "moocho-test", "troves"
+                bucketName, "troves"
             )
         )
         return objectMapper.readValue(trovesObject.objectContent)
@@ -48,7 +50,7 @@ class TroveRepository(
         logger.info("Loading trove: ${troveDef.id}")
         val s3Object = amazonS3Client.getObject(
             GetObjectRequest(
-                "moocho-test", "${troveDef.bucketPrefix}/${troveDef.id}"
+                bucketName, "${troveDef.bucketPrefix}/${troveDef.id}"
             )
         )
         val trove = objectMapper.readValue<Trove>(s3Object.objectContent)

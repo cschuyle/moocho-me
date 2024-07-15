@@ -33,7 +33,7 @@ usage() {
 echo "Will copy recursively ${script_dir}/buckets/${from_local_bucket_dir} to ${AWS_ENDPOINT_URL}"
 
 create-bucket() {
-  if [[ -z "$((aws s3 ls ${from_local_bucket_dir} 2>&1) > /dev/null)" ]]
+  if [[ -z "$( (aws s3 ls ${from_local_bucket_dir} 2>&1) > /dev/null)" ]]
   then
     aws s3api create-bucket --bucket "${from_local_bucket_dir}"
   fi
