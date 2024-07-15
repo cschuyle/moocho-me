@@ -30,6 +30,7 @@ class AwsConfiguration {
         @Value("\${aws.endpoint.url:#{null}}") endpoint: String?
     ): AmazonS3 {
         val creds = AWSStaticCredentialsProvider(BasicAWSCredentials(accessKey, secretKey))
+        logger.info("ENDPOINT: ${endpoint}")
         if (endpoint == null) {
             if (region == null) {
                 throw IllegalStateException("Property aws.endpoint.url not provided, therefore must provide aws.region, which is not provided")
