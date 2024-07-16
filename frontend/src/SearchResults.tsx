@@ -12,7 +12,7 @@ import {
     ItemHitFromServer,
     QueryResultFromServer,
     SearchResultFromServer,
-    TroveHitFromServer
+    TroveHitFromServer, TroveHitSummary
 } from "./ServerData";
 
 /*
@@ -73,13 +73,6 @@ export interface SearchResult {
     shortName: string
 }
 
-export interface TroveSummary {
-    troveId: string
-    name: string
-    shortName: string
-    itemCount: number
-}
-
 const SearchResults = (props: SearchResultsProps) => {
 
     // SEARCH
@@ -112,14 +105,15 @@ const SearchResults = (props: SearchResultsProps) => {
     }
 
     // TODO Why am I mapping this? Oh partly because I want to be able to have null
-    function mapTroveHits(troveHits: TroveHitFromServer[]): (TroveSummary | null)[] {
+    function mapTroveHits(troveHits: TroveHitFromServer[]): (TroveHitSummary | null)[] {
         return troveHits.map((troveHit: TroveHitFromServer) => {
+            console.log(`${troveHit.shortName} troveHit.totalCount: ${troveHit.totalCount}`)
             if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
                 return {
                     troveId: troveHit.troveId,
                     name: troveHit.name,
                     shortName: troveHit.shortName,
-                    itemCount: troveHit.totalCount,
+                    totalCount: troveHit.totalCount,
                     hitCount: troveHit.hitCount,
                     hitType: troveHit.hitType
                 }
@@ -136,10 +130,6 @@ const SearchResults = (props: SearchResultsProps) => {
             troveShortName: props.getTroveShortName(hit.troveId),
             troveId: hit.troveId,
             shortName: props.getTroveShortName(hit.troveId),
-
-            // Blecch. Just mirror the data structures in the server for chrissakes
-            // totalCount: -1,
-            // hitCount: -1,
             secondaryHits: []
         }
     }

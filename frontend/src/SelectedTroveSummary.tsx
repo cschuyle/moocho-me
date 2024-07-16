@@ -1,7 +1,6 @@
 import React from 'react';
 import {Badge} from 'react-bootstrap';
-// import {TroveSummary} from "./SearchResults";
-import {TroveHitFromServer, TroveSummaryFromServer} from "./ServerData";
+import {TroveHitFromServer, TroveHitSummary} from "./ServerData";
 
 interface SelectedTroveSummaryProps {
     troveHits: TroveHitFromServer[]
@@ -29,7 +28,7 @@ const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
         })
     }
 
-    // TODO: These are never showing because the API doesn't return any "none"-typed (troves with no hits) hit summaries. Clean that stuff up)
+    // TODO: These are never showing for comparison searches (dup detection) because the API doesn't return any "none"-typed (troves with no hits) hit summaries. Clean that stuff up)
     // In any case, I probably don't want to display them by default. But let's make the code more abvious shall we?
 
     // Sort alphabetically
@@ -43,7 +42,7 @@ const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
 
     return (
         <>
-            {primaryTroveHits().map((troveHit: TroveHitFromServer) =>
+            {primaryTroveHits().map((troveHit: TroveHitSummary) =>
                 <Badge bg="primary" key={troveHit.troveId}>
                     {troveHit.shortName} ({troveHit.hitCount}/{troveHit.totalCount})
                 </Badge>
