@@ -75,12 +75,12 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
 
         fun makeTroveHit(troveId: String, hitCount: Int, hitType: String): TroveHit {
             return TroveHit(
-                troveId,
-                hitCount,
-                repository.findById(troveId).name,
-                repository.findById(troveId).shortName,
-                repository.findById(troveId).totalCount(),
-                hitType
+                troveId=troveId,
+                name=repository.findById(troveId).name,
+                shortName=repository.findById(troveId).shortName,
+                totalCount=repository.findById(troveId).totalCount(),
+                hitType=hitType,
+                hitCount=hitCount
             )
         }
 

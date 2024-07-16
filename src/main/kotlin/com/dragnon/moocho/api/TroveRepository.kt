@@ -73,28 +73,6 @@ class TroveRepository(
     }
 }
 
-
-data class Trove(
-    val id: String,
-    val name: String,
-    val shortName: String,
-    val titles: List<String>?,
-    val items: List<Item>?
-) {
-    fun totalCount() = (items?.count()) ?: 0 + (titles?.count() ?: 0)
-}
-
-data class TroveSummary(
-    val troveId: String,
-    val name: String,
-    val shortName: String,
-    val itemCount: Int
-)
-
-data class Item(val movie: Movie?, val spotifyItem: SpotifyItem?, val littlePrinceItem: LittlePrinceItem?)
-
-data class Movie(val title: String, val year: String, val director: String)
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class SpotifyItem(
     val title: String,

@@ -7,11 +7,12 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import './App.css';
 import TroveSelector from "./TroveSelector";
 import SearchResults from './SearchResults';
-import {TroveHitFromServer, TroveSummaryFromServer} from "./ServerData";
+import {TroveHitFromServer, TroveHitSummary, TroveSummaryFromServer} from "./ServerData";
 
 const fetchTroveSummaries = async () => {
     try {
         const {data: response} = await axios.get("/troves/summary");
+        // console.log("GOT TROVE SUMMARIES: " + response)
         return response
     } catch (error) {
         console.log(error);
@@ -27,22 +28,23 @@ const arrayFrom = (encodedArray: string) => {
     return encodedArray.split("~~")
 }
 
-const mapTroveSummaries = (troveSummaries: TroveSummaryFromServer[]): TroveHitFromServer[] => {
+const mapTroveSummaries = (troveSummaries: TroveSummaryFromServer[]): TroveHitSummary[] => {
+    // console.log("MAPPING TROVE HIT SUMMARIES FROM " + troveSummaries)
     return troveSummaries.map(troveSummary => {
         return {
             troveId: troveSummary.troveId,
             name: troveSummary.name,
             shortName: troveSummary.shortName,
             totalCount: troveSummary.itemCount,
-            hitCount: -1,
-            hitType: ""
+            hitCount: 0,
+            hitType: "none"
         }
     })
 }
 
 const App = () => {
 
-    const [troveSummaries, setTroveSummaries]: [TroveSummaryFromServer[], any] = useState([])
+    const [troveHitSummaries, setTroveHitSummaries]: [TroveSummaryFromServer[], any] = useState([])
     const [selectedTroves, setSelectedTroves]: [string, any] = useState("")
     const [primaryTrove, setPrimaryTrove]: [string, any] = useState("")
     const [troveShortNameMap, setTroveShortNameMap]: [Map<string, string>, any] =
@@ -50,7 +52,7 @@ const App = () => {
 
     useEffect(() => {
             fetchTroveSummaries().then(theTroveSummaries => {
-                setTroveSummaries(mapTroveSummaries(theTroveSummaries))
+                setTroveHitSummaries(mapTroveSummaries(theTroveSummaries))
                 theTroveSummaries.map((theTrove: TroveSummaryFromServer) => {
                     troveShortNameMap.set("" + theTrove.troveId, "" + theTrove.shortName)
                 })
@@ -91,7 +93,7 @@ const App = () => {
 
                 <Offcanvas.Body>
                     <TroveSelector
-                        troves={troveSummaries}
+                        troves={troveHitSummaries}
                         selectedTroves={selectedTroves}
                         setSelectedTroves={setSelectedTroves}
                         primaryTrove={primaryTrove}

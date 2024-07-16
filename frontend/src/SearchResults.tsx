@@ -111,6 +111,7 @@ const SearchResults = (props: SearchResultsProps) => {
         }
     }
 
+    // TODO Why am I mapping this? Oh partly because I want to be able to have null
     function mapTroveHits(troveHits: TroveHitFromServer[]): (TroveSummary | null)[] {
         return troveHits.map((troveHit: TroveHitFromServer) => {
             if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
@@ -118,8 +119,9 @@ const SearchResults = (props: SearchResultsProps) => {
                     troveId: troveHit.troveId,
                     name: troveHit.name,
                     shortName: troveHit.shortName,
+                    itemCount: troveHit.totalCount,
                     hitCount: troveHit.hitCount,
-                    itemCount: troveHit.totalCount
+                    hitType: troveHit.hitType
                 }
             }
             return null
@@ -158,7 +160,7 @@ const SearchResults = (props: SearchResultsProps) => {
 
     const doSearch = (searchText: string) => {
         doSearchRequest(searchText).then((response: QueryResultFromServer) => {
-            console.log("TROVE HITS IS " + response.troveHits)
+            // console.log("TROVE HITS IS " + response.troveHits)
             setTroveHits(mapTroveHits(response.troveHits)
                 .filter((troveHit: any) => troveHit !== null))
 
@@ -238,7 +240,7 @@ const SearchResults = (props: SearchResultsProps) => {
                             <td>{item.title}</td>
                         </tr>
                         {item.secondaryHits!.map((secondary: SearchResult) => (
-                            <tr key={item.key}>
+                            <tr key={secondary.key}>
                                 <td>{Math.floor(secondary.score * 100)}%</td>
                                 <td>{secondary.troveShortName}</td>
                                 <td>{secondary.title}</td>
