@@ -6,8 +6,8 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 
 import './App.css';
 import TroveSelector from "./TroveSelector";
-import SearchResults, {TroveSummary} from './SearchResults';
-import {TroveSummaryFromServer} from "./ServerData";
+import SearchResults from './SearchResults';
+import {TroveHitFromServer, TroveSummaryFromServer} from "./ServerData";
 
 const fetchTroveSummaries = async () => {
     try {
@@ -27,21 +27,22 @@ const arrayFrom = (encodedArray: string) => {
     return encodedArray.split("~~")
 }
 
-const mapTroveSummaries = (troveSummaries: TroveSummaryFromServer[]): TroveSummary[] => {
+const mapTroveSummaries = (troveSummaries: TroveSummaryFromServer[]): TroveHitFromServer[] => {
     return troveSummaries.map(troveSummary => {
         return {
             troveId: troveSummary.troveId,
             name: troveSummary.name,
             shortName: troveSummary.shortName,
-            itemCount: troveSummary.itemCount,
-            hitCount: -1
+            totalCount: troveSummary.itemCount,
+            hitCount: -1,
+            hitType: ""
         }
     })
 }
 
 const App = () => {
 
-    const [troveSummaries, setTroveSummaries]: [TroveSummary[], any] = useState([])
+    const [troveSummaries, setTroveSummaries]: [TroveSummaryFromServer[], any] = useState([])
     const [selectedTroves, setSelectedTroves]: [string, any] = useState("")
     const [primaryTrove, setPrimaryTrove]: [string, any] = useState("")
     const [troveShortNameMap, setTroveShortNameMap]: [Map<string, string>, any] =

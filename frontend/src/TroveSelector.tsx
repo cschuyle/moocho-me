@@ -3,10 +3,10 @@ import React, {useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import {InputGroup} from "react-bootstrap";
-import {TroveSummary} from "./SearchResults";
+import {TroveSummaryFromServer} from "./ServerData";
 
 interface TroveSelectorProps {
-    troves: TroveSummary[]
+    troves: TroveSummaryFromServer[]
 
     selectedTroves: any // TODO Should this be state?
     setSelectedTroves: any
@@ -17,7 +17,7 @@ interface TroveSelectorProps {
 
 const TroveSelector = (props: TroveSelectorProps) => {
     const [troveFilter, setTroveFilter]: [string, any] = useState('');
-    const [filteredTroves, setFilteredTroves]: [TroveSummary[], any] = useState([]);
+    const [filteredTroves, setFilteredTroves]: [TroveSummaryFromServer[], any] = useState([]);
     const [showOnlySelected, setShowOnlySelected]: [boolean, any] = useState(false);
 
     React.useEffect(() => {

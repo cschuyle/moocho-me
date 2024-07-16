@@ -5,7 +5,8 @@ data class TroveHit(
     val hitCount: Int,
     val name: String,
     val shortName: String,
-    val totalCount: Int
+    val totalCount: Int,
+    val hitType: String
 )
 
 data class QueryResult(

@@ -7,10 +7,11 @@ export interface TroveSummaryFromServer {
 
 export interface TroveHitFromServer {
     troveId: string
-    hitCount: number
     name: string
     shortName: string
     totalCount: number
+    hitCount: number
+    hitType: string  // "primary" or "secondary" or "none"
 }
 
 export interface QueryResultFromServer {

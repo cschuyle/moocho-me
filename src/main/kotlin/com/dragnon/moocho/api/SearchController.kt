@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class SearchController(val repository: TroveRepository, val duplicateFinder: DuplicateFinder) {
 
+    private val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)
+
     @GetMapping("/search")
     fun search(
         @RequestParam troves: String,
@@ -55,26 +57,45 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
     }
 
     private fun getTroveHits(searchResults: List<SearchResult>): List<TroveHit> {
-        val troveHits = HashMap<String, Int>()
-        repository.list().forEach { trove ->
-            troveHits[trove.id] = 0
-        }
+        val primaryHitCounts = HashMap<String, Int>()
+        val secondaryHitCounts = HashMap<String, Int>()
+
         searchResults.forEach { searchResult ->
-            troveHits.compute(searchResult.primaryHit.troveId) { _, v ->
-                if (v == null) null else v + 1
+            primaryHitCounts.compute(searchResult.primaryHit.troveId) { k, v ->
+//                logger.info("PRIMARY HIT ${k} had ${v}")
+                if (v == null) 1 else v + 1
+            }
+            for (secondaryHit in searchResult.secondaryHits) {
+                secondaryHitCounts.compute(secondaryHit.troveId) { k, v ->
+//                    logger.info("SECONDARY HIT ${k} had ${v}")
+                    if (v == null) 1 else v + 1
+                }
             }
         }
 
-        val troveHitsResponse = troveHits
-            .map { (troveId, hitCount) ->
-                TroveHit(
-                    troveId,
-                    hitCount,
-                    repository.findById(troveId).name,
-                    repository.findById(troveId).shortName,
-                    repository.findById(troveId).totalCount()
-                )
+        fun makeTroveHit(troveId: String, hitCount: Int, hitType: String): TroveHit {
+            return TroveHit(
+                troveId,
+                hitCount,
+                repository.findById(troveId).name,
+                repository.findById(troveId).shortName,
+                repository.findById(troveId).totalCount(),
+                hitType
+            )
+        }
+
+        val allTroves: List<Trove> = repository.list()
+
+        return allTroves.map { trove ->
+            when {
+                primaryHitCounts.containsKey(trove.id) ->
+                    makeTroveHit(trove.id, primaryHitCounts[trove.id]!!, "primary")
+
+                secondaryHitCounts.containsKey(trove.id) ->
+                    makeTroveHit(trove.id, secondaryHitCounts[trove.id]!!, "secondary")
+
+                else -> makeTroveHit(trove.id, 0, "none")
             }
-        return troveHitsResponse
+        }
     }
 }

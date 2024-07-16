@@ -64,30 +64,29 @@ interface SearchResultsProps {
 }
 
 export interface SearchResult {
-    secondaryHits: SearchResult[];
-    key: React.Key | null | undefined;
-    troveId: string;
-    troveShortName: string;
-    title: string;
-    score: number;
-    shortName: string;
+    secondaryHits: SearchResult[]
+    key: React.Key | null | undefined
+    troveId: string
+    troveShortName: string
+    title: string
+    score: number
+    shortName: string
 }
 
 export interface TroveSummary {
-    troveId: string;
-    name: string;
-    shortName: string;
-    itemCount: number;
-    hitCount: number
+    troveId: string
+    name: string
+    shortName: string
+    itemCount: number
 }
 
 const SearchResults = (props: SearchResultsProps) => {
 
     // SEARCH
 
-    const [searchText, setSearchText]: [string, any] = useState('');
-    const [resultItems, setResultItems]: [SearchResult[], any] = useState([]);
-    const [troveHits, setTroveHits]: [TroveSummary[], any] = useState([]);
+    const [searchText, setSearchText]: [string, any] = useState('')
+    const [resultItems, setResultItems]: [SearchResult[], any] = useState([])
+    const [troveHits, setTroveHits]: [TroveHitFromServer[], any] = useState([])
 
     function getSelectedTrovesQuery() {
         return (props.selectedTroves.length === 0)
@@ -99,16 +98,16 @@ const SearchResults = (props: SearchResultsProps) => {
                     }
                     return `${trove}:secondary`
                 })
-                .join(",");
+                .join(",")
     }
 
     const doSearchRequest = async (searchText: string) => {
         try {
             const selectedTrovesQuery = getSelectedTrovesQuery()
-            const {data: response} = await axios.get(`/search?troves=${selectedTrovesQuery}&query=${encodeURI(searchText)}&maxResults=3000`);
+            const {data: response} = await axios.get(`/search?troves=${selectedTrovesQuery}&query=${encodeURI(searchText)}&maxResults=3000`)
             return response
         } catch (error) {
-            console.log(error);
+            console.log(error)
         }
     }
 
@@ -129,7 +128,7 @@ const SearchResults = (props: SearchResultsProps) => {
 
     function mapItemHit(hit: ItemHitFromServer, parentKey: string = ""): SearchResult {
         return {
-            key: hit.doc + parentKey,
+            key: hit.troveId + hit.doc + parentKey,
             score: Math.floor(hit.score * 100),
             title: hit.title,
             troveShortName: props.getTroveShortName(hit.troveId),
@@ -140,7 +139,7 @@ const SearchResults = (props: SearchResultsProps) => {
             // totalCount: -1,
             // hitCount: -1,
             secondaryHits: []
-        };
+        }
     }
 
     function mapSecondaryHits(secondaryHits: any, parentKey: string) {
@@ -152,33 +151,34 @@ const SearchResults = (props: SearchResultsProps) => {
     function mapSearchResults(searchResults: SearchResultFromServer[]): SearchResult[] {
         return searchResults.map((searchResult: SearchResultFromServer) => {
             let primaryHit: SearchResult = mapItemHit(searchResult.primaryHit)
-            primaryHit["secondaryHits"] = mapSecondaryHits(searchResult.secondaryHits, ""+primaryHit.key);
+            primaryHit["secondaryHits"] = mapSecondaryHits(searchResult.secondaryHits, "" + primaryHit.key)
             return primaryHit
         })
     }
 
     const doSearch = (searchText: string) => {
         doSearchRequest(searchText).then((response: QueryResultFromServer) => {
+            console.log("TROVE HITS IS " + response.troveHits)
             setTroveHits(mapTroveHits(response.troveHits)
                 .filter((troveHit: any) => troveHit !== null))
 
             setResultItems(mapSearchResults(response.searchResults))
-        });
+        })
     }
 
     const handleKeyDown = (e: any) => {
         if (e.key === "Enter") {
             e.preventDefault()
-            doSearch(searchText);
+            doSearch(searchText)
         }
         if (e.key === "Escape") {
             setSearchText("")
             doSearch("")
         }
-    };
+    }
 
     const handleDoSearch = (_: React.ChangeEvent<any>) =>
-        doSearch(searchText);
+        doSearch(searchText)
 
     const handleSearchAll = (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setSearchText("*")
