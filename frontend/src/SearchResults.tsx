@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 
 import Table from 'react-bootstrap/Table';
@@ -12,7 +12,7 @@ import {
     ItemHitFromServer,
     QueryResultFromServer,
     SearchResultFromServer,
-    TroveHitFromServer, TroveHitSummary
+    TroveHitFromServer, TroveHitSummary, TroveSummaryFromServer
 } from "./ServerData";
 
 /*
@@ -58,6 +58,7 @@ RESPONSE
 */
 
 interface SearchResultsProps {
+    getTroveSummary: any
     selectedTroves: string[]
     primaryTrove: string
     getTroveShortName: any
@@ -107,7 +108,7 @@ const SearchResults = (props: SearchResultsProps) => {
     // TODO Why am I mapping this? Oh partly because I want to be able to have null
     function mapTroveHits(troveHits: TroveHitFromServer[]): (TroveHitSummary | null)[] {
         return troveHits.map((troveHit: TroveHitFromServer) => {
-            console.log(`${troveHit.shortName} troveHit.totalCount: ${troveHit.totalCount}`)
+            // console.log(`${troveHit.shortName} troveHit.totalCount: ${troveHit.totalCount}`)
             if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
                 return {
                     troveId: troveHit.troveId,
@@ -181,6 +182,32 @@ const SearchResults = (props: SearchResultsProps) => {
         input.preventDefault()
         setSearchText(input.target.value)
     }
+
+    const emptyTroveHitForId = (troveId: string) => {
+        const troveSummary = props.getTroveSummary(troveId)!
+        return {
+            troveId: troveSummary.troveId,
+            name: troveSummary.name,
+            shortName: troveSummary.shortName,
+            totalCount: troveSummary.itemCount,
+            hitCount: 0,
+            hitType: "none"
+        }
+    }
+
+    useEffect(() => {
+            console.log(`props.selectedTroves.length = ${props.selectedTroves.length}, troveHits.length = ${troveHits.length}`)
+            if (props.selectedTroves.length !== 0 && troveHits.length === 0) {
+                setTroveHits(props.selectedTroves.map((troveId) => {
+                    return emptyTroveHitForId(troveId)
+                }))
+            } else {
+                setTroveHits([])
+            }
+        },
+        // deps
+        [props]
+    )
 
     // THE MEAT
 

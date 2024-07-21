@@ -7,7 +7,7 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import './App.css';
 import TroveSelector from "./TroveSelector";
 import SearchResults from './SearchResults';
-import {TroveHitFromServer, TroveHitSummary, TroveSummaryFromServer} from "./ServerData";
+import {TroveHitSummary, TroveSummaryFromServer} from "./ServerData";
 
 const fetchTroveSummaries = async () => {
     try {
@@ -44,17 +44,25 @@ const mapTroveSummaries = (troveSummaries: TroveSummaryFromServer[]): TroveHitSu
 
 const App = () => {
 
+    const [allTroveSummaries, setAllTroveSummaries]: [Map<string, TroveSummaryFromServer>, any] = useState(new Map())
     const [troveHitSummaries, setTroveHitSummaries]: [TroveSummaryFromServer[], any] = useState([])
     const [selectedTroves, setSelectedTroves]: [string, any] = useState("")
     const [primaryTrove, setPrimaryTrove]: [string, any] = useState("")
-    const [troveShortNameMap, setTroveShortNameMap]: [Map<string, string>, any] =
-        useState(new Map<string, string>())
+    const [troveShortNameMap, setTroveShortNameMap]: [Map<string, string>, any] = useState(new Map())
 
     useEffect(() => {
             fetchTroveSummaries().then(theTroveSummaries => {
+                // This is error-prone because of the naming of the vars ... make a function!
+                theTroveSummaries.forEach((theTroveSummary: TroveSummaryFromServer) => {
+                    allTroveSummaries.set("" + theTroveSummary.troveId, theTroveSummary)
+                })
+                setAllTroveSummaries(allTroveSummaries)
+
                 setTroveHitSummaries(mapTroveSummaries(theTroveSummaries))
-                theTroveSummaries.map((theTrove: TroveSummaryFromServer) => {
-                    troveShortNameMap.set("" + theTrove.troveId, "" + theTrove.shortName)
+
+                // TODO allTroveSummaries has this info already
+                theTroveSummaries.forEach((theTroveSummary: TroveSummaryFromServer) => {
+                    troveShortNameMap.set("" + theTroveSummary.troveId, "" + theTroveSummary.shortName)
                 })
                 setTroveShortNameMap(troveShortNameMap)
             })
@@ -73,6 +81,10 @@ const App = () => {
     const getTroveShortName = (troveId: string) => {
         return troveShortNameMap.get(troveId)
     }
+    const getTroveSummary = (troveId: string) => {
+        // console.log(`allTroveSummaries is ${allTroveSummaries}`)
+        return allTroveSummaries.get(troveId)
+    }
 
     return (
         <>
@@ -81,6 +93,7 @@ const App = () => {
             </Button>
 
             <SearchResults
+                getTroveSummary={getTroveSummary}
                 selectedTroves={arrayFrom(selectedTroves)}
                 primaryTrove={primaryTrove}
                 getTroveShortName={getTroveShortName}
