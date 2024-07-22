@@ -6,12 +6,12 @@ import {InputGroup} from "react-bootstrap";
 import {TroveSummaryFromServer} from "./ServerData";
 
 interface TroveSelectorProps {
-    troves: TroveSummaryFromServer[]
+    getAllTroveSummaries: () => Map<string, TroveSummaryFromServer>
 
-    selectedTroves: any // TODO Should this be state?
     setSelectedTroves: any
+    getSelectedTroves: any
 
-    primaryTrove: string
+    getPrimaryTrove: any
     setPrimaryTrove: any
 }
 
@@ -37,14 +37,15 @@ const TroveSelector = (props: TroveSelectorProps) => {
     function filterTroveList(theFilter: string) {
 
         if (theFilter === "") {
-            setFilteredTroves(props.troves)
+            setFilteredTroves(Array.from(props.getAllTroveSummaries().values()))
             return
         }
-        const filtered = props.troves.filter(trove => {
-                return trove.name.toLowerCase().includes(theFilter.toLowerCase()) ||
-                    trove.troveId.toLowerCase().includes(troveFilter.toLowerCase())
-            }
-        )
+        const filtered = Array.from(props.getAllTroveSummaries().values())
+            .filter(trove => {
+                    return trove.name.toLowerCase().includes(theFilter.toLowerCase()) ||
+                        trove.troveId.toLowerCase().includes(troveFilter.toLowerCase())
+                }
+            )
         setFilteredTroves(filtered)
     }
 
@@ -78,12 +79,12 @@ const TroveSelector = (props: TroveSelectorProps) => {
     const mangledTroveString = (troveId: string) => `~${troveId}~`
 
     const isTroveSelected = (troveId: string) =>
-        props.selectedTroves.indexOf(mangledTroveString(troveId)) >= 0
+        props.getSelectedTroves().indexOf(mangledTroveString(troveId)) >= 0
 
 
     const handleTroveSelectionChanged = (_: any, troveId: string) => {
         const wasSelected = isTroveSelected(troveId)
-        let newSelectedTroves = "" + props.selectedTroves
+        let newSelectedTroves = "" + props.getSelectedTroves()
         if (wasSelected) {
             newSelectedTroves = newSelectedTroves.replace(mangledTroveString(troveId), "");
         } else {
@@ -95,10 +96,10 @@ const TroveSelector = (props: TroveSelectorProps) => {
     // PRIMARY TROVE - there can be only one and it must also be selected.
 
     const isTrovePrimarySelected = (troveId: string) =>
-        props.primaryTrove == troveId
+        props.getPrimaryTrove() === troveId
 
     const handlePrimaryTroveSelectionChanged = (_: any, troveId: string) => {
-        if (props.primaryTrove === troveId) {
+        if (props.getPrimaryTrove() === troveId) {
             props.setPrimaryTrove("")
         } else {
             props.setPrimaryTrove(troveId)
@@ -119,7 +120,7 @@ const TroveSelector = (props: TroveSelectorProps) => {
     // THE MEAT
 
     function searchAllTrovesIsSet() {
-        return props.selectedTroves === "";
+        return props.getSelectedTroves() === "";
     }
 
     return (

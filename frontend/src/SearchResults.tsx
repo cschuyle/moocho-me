@@ -108,7 +108,6 @@ const SearchResults = (props: SearchResultsProps) => {
     // TODO Why am I mapping this? Oh partly because I want to be able to have null
     function mapTroveHits(troveHits: TroveHitFromServer[]): (TroveHitSummary | null)[] {
         return troveHits.map((troveHit: TroveHitFromServer) => {
-            // console.log(`${troveHit.shortName} troveHit.totalCount: ${troveHit.totalCount}`)
             if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
                 return {
                     troveId: troveHit.troveId,
@@ -151,7 +150,6 @@ const SearchResults = (props: SearchResultsProps) => {
 
     const doSearch = (searchText: string) => {
         doSearchRequest(searchText).then((response: QueryResultFromServer) => {
-            // console.log("TROVE HITS IS " + response.troveHits)
             setTroveHits(mapTroveHits(response.troveHits)
                 .filter((troveHit: any) => troveHit !== null))
 
@@ -196,8 +194,7 @@ const SearchResults = (props: SearchResultsProps) => {
     }
 
     useEffect(() => {
-            console.log(`props.selectedTroves.length = ${props.selectedTroves.length}, troveHits.length = ${troveHits.length}`)
-            if (props.selectedTroves.length !== 0 && troveHits.length === 0) {
+            if (props.selectedTroves.length !== 0) {
                 setTroveHits(props.selectedTroves.map((troveId) => {
                     return emptyTroveHitForId(troveId)
                 }))

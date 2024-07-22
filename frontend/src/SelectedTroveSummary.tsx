@@ -10,10 +10,7 @@ const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
 
     // Sort by number of hits descending
     const primaryTroveHits: () => TroveHitFromServer[] = () => {
-        // console.log("LOOKING FOR PRIMARIES IN " + props.troveHits)
         return props.troveHits.filter(troveHit => {
-            // console.log(`troveHit.hitCount: ${troveHit.hitCount}`)
-            // console.log(`troveHit.hitType: ${troveHit.hitType}`)
             return troveHit.hitCount > 0 && troveHit.hitType === "primary"
         }).sort((th1: any, th2: any) => {
             return th2.hitCount - th1.hitCount
