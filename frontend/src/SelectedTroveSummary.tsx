@@ -29,9 +29,17 @@ const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
     // In any case, I probably don't want to display them by default. But let's make the code more abvious shall we?
 
     // Sort alphabetically
+    const primaryTrovesWithoutHits: () => TroveHitFromServer[] = () => {
+        return props.troveHits.filter(troveHit => {
+            return troveHit.hitCount === 0 && troveHit.hitType === "primary"
+        }).sort((th1: any, th2: any) => {
+            return (th1.shortName.toLowerCase() < th2.shortName.toLowerCase()) ? -1 : 1
+        })
+    }
+
     const trovesWithoutHits: () => TroveHitFromServer[] = () => {
         return props.troveHits.filter(troveHit => {
-            return troveHit.hitCount === 0
+            return troveHit.hitCount === 0 && troveHit.hitType !== "primary"
         }).sort((th1: any, th2: any) => {
             return (th1.shortName.toLowerCase() < th2.shortName.toLowerCase()) ? -1 : 1
         })
@@ -40,13 +48,19 @@ const SelectedTroveSummary = (props: SelectedTroveSummaryProps) => {
     return (
         <>
             {primaryTroveHits().map((troveHit: TroveHitSummary) =>
-                <Badge bg="primary" key={troveHit.troveId}>
+                <Badge bg="success" key={troveHit.troveId}>
                     {troveHit.shortName} ({troveHit.hitCount}/{troveHit.totalCount})
                 </Badge>
             )}
 
             {secondaryTroveHits().map((troveHit: TroveHitFromServer) =>
-                <Badge bg="success" key={troveHit.troveId}>
+                <Badge bg="info" key={troveHit.troveId}>
+                    {troveHit.shortName} ({troveHit.hitCount}/{troveHit.totalCount})
+                </Badge>
+            )}
+
+            {primaryTrovesWithoutHits().map(troveHit =>
+                <Badge bg="dark" key={troveHit.troveId}>
                     {troveHit.shortName} ({troveHit.hitCount}/{troveHit.totalCount})
                 </Badge>
             )}

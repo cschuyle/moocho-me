@@ -183,13 +183,14 @@ const SearchResults = (props: SearchResultsProps) => {
 
     const emptyTroveHitForId = (troveId: string) => {
         const troveSummary = props.getTroveSummary(troveId)!
+        console.log("PRIMARY TROVE IS " + props.primaryTrove)
         return {
             troveId: troveSummary.troveId,
             name: troveSummary.name,
             shortName: troveSummary.shortName,
             totalCount: troveSummary.itemCount,
             hitCount: 0,
-            hitType: "none"
+            hitType: (troveId === props.primaryTrove) ? "primary" : "none"
         }
     }
 
