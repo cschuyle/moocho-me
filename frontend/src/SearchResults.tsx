@@ -12,7 +12,9 @@ import {
     ItemHitFromServer,
     QueryResultFromServer,
     SearchResultFromServer,
-    TroveHitFromServer, TroveHitSummary, TroveSummaryFromServer
+    TroveHitFromServer,
+    TroveHitSummary,
+    TroveSummaryFromServer
 } from "./ServerData";
 
 /*
@@ -58,10 +60,10 @@ RESPONSE
 */
 
 interface SearchResultsProps {
-    getTroveSummary: any
+    getTroveSummary: (troveId: string) => TroveSummaryFromServer
     selectedTroves: Map<string, number>
     primaryTrove: string
-    getTroveShortName: any
+    getTroveShortName: (troveId: string) => string
 }
 
 export interface SearchResult {
@@ -137,8 +139,8 @@ const SearchResults = (props: SearchResultsProps) => {
         }
     }
 
-    function mapSecondaryHits(secondaryHits: any, parentKey: string) {
-        return secondaryHits.map((secondaryHit: any) => {
+    function mapSecondaryHits(secondaryHits: ItemHitFromServer[], parentKey: string) {
+        return secondaryHits.map((secondaryHit: ItemHitFromServer) => {
             return mapItemHit(secondaryHit, parentKey)
         })
     }
@@ -154,7 +156,7 @@ const SearchResults = (props: SearchResultsProps) => {
     const doSearch = (searchText: string) => {
         doSearchRequest(searchText).then((response: QueryResultFromServer) => {
             setTroveHits(mapTroveHits(response.troveHits)
-                .filter((troveHit: any) => troveHit !== null))
+                .filter((troveHit: TroveHitSummary | null) => troveHit !== null))
 
             setResultItems(mapSearchResults(response.searchResults))
         })

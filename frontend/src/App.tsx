@@ -56,12 +56,9 @@ const App = () => {
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
-    const getTroveShortName = (troveId: string) => {
-        return troveShortNameMap.get(troveId)
-    }
-    const getTroveSummary = (troveId: string) => {
-        return allTroveSummaries.get(troveId)
-    }
+    const getTroveShortName = (troveId: string) => troveShortNameMap.get(troveId)!!
+
+    const getTroveSummary = (troveId: string) => allTroveSummaries.get(troveId)!!
 
     const getPrimaryTrove = () => primaryTrove
     const getAllTroveSummaries = () => allTroveSummaries

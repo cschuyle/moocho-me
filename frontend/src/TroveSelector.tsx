@@ -9,10 +9,10 @@ interface TroveSelectorProps {
     getAllTroveSummaries: () => Map<string, TroveSummaryFromServer>
 
     getSelectedTroves: () => Map<string, number>
-    setSelectedTroves: any
+    setSelectedTroves: (map: Map<any, any>) => null
 
     getPrimaryTrove: () => string
-    setPrimaryTrove: any
+    setPrimaryTrove: (troveId: string) => null
 }
 
 const TroveSelector = (props: TroveSelectorProps) => {
@@ -114,7 +114,7 @@ const TroveSelector = (props: TroveSelectorProps) => {
 
     const handleSelectSearchAllTroves = () => {
         props.setPrimaryTrove("")
-        props.setSelectedTroves("")
+        props.setSelectedTroves(new Map())
     }
 
     // THE MEAT
