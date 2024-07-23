@@ -59,7 +59,7 @@ RESPONSE
 
 interface SearchResultsProps {
     getTroveSummary: any
-    selectedTroves: string[]
+    selectedTroves: Map<string, number>
     primaryTrove: string
     getTroveShortName: any
 }
@@ -83,9 +83,9 @@ const SearchResults = (props: SearchResultsProps) => {
     const [troveHits, setTroveHits]: [TroveHitFromServer[], any] = useState([])
 
     function getSelectedTrovesQuery() {
-        return (props.selectedTroves.length === 0)
+        return (Array.from(props.selectedTroves.keys()).length === 0)
             ? "*"
-            : props.selectedTroves
+            : Array.from(props.selectedTroves.keys())
                 .map(trove => {
                     if (props.primaryTrove === trove) {
                         return `${trove}:primary`
@@ -105,10 +105,13 @@ const SearchResults = (props: SearchResultsProps) => {
         }
     }
 
+    const selectedTrovesList = () => Array.from(props.selectedTroves.keys())
+
     // TODO Why am I mapping this? Oh partly because I want to be able to have null
     function mapTroveHits(troveHits: TroveHitFromServer[]): (TroveHitSummary | null)[] {
         return troveHits.map((troveHit: TroveHitFromServer) => {
-            if (props.selectedTroves.length === 0 || props.selectedTroves.includes(troveHit.troveId)) {
+
+            if (selectedTrovesList().length === 0 || selectedTrovesList().includes(troveHit.troveId)) {
                 return {
                     troveId: troveHit.troveId,
                     name: troveHit.name,
@@ -195,8 +198,8 @@ const SearchResults = (props: SearchResultsProps) => {
     }
 
     useEffect(() => {
-            if (props.selectedTroves.length !== 0) {
-                setTroveHits(props.selectedTroves.map((troveId) => {
+            if (selectedTrovesList().length !== 0) {
+                setTroveHits(selectedTrovesList().map((troveId) => {
                     return emptyTroveHitForId(troveId)
                 }))
             } else {

@@ -18,20 +18,11 @@ const fetchTroveSummaries = async () => {
     }
 };
 
-
-const arrayFrom = (encodedArray: string) => {
-    if (encodedArray.length == 0) {
-        return []
-    }
-    encodedArray = encodedArray.substring(1, encodedArray.length - 1)
-    return encodedArray.split("~~")
-}
-
 const App = () => {
 
     const [allTroveSummaries, setAllTroveSummaries]: [Map<string, TroveSummaryFromServer>, any] = useState(new Map())
     // const [troveHitSummaries, setTroveHitSummaries]: [TroveSummaryFromServer[], any] = useState([])
-    const [selectedTroves, setSelectedTroves]: [string, any] = useState("")
+    const [selectedTroves, setSelectedTroves]: [Map<string, number>, any] = useState(new Map())
     const [primaryTrove, setPrimaryTrove]: [string, any] = useState("")
     const [troveShortNameMap, setTroveShortNameMap]: [Map<string, string>, any] = useState(new Map())
 
@@ -83,7 +74,7 @@ const App = () => {
 
             <SearchResults
                 getTroveSummary={getTroveSummary}
-                selectedTroves={arrayFrom(selectedTroves)}
+                selectedTroves={selectedTroves}
                 primaryTrove={primaryTrove}
                 getTroveShortName={getTroveShortName}
             />

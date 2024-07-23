@@ -8,10 +8,10 @@ import {TroveSummaryFromServer} from "./ServerData";
 interface TroveSelectorProps {
     getAllTroveSummaries: () => Map<string, TroveSummaryFromServer>
 
+    getSelectedTroves: () => Map<string, number>
     setSelectedTroves: any
-    getSelectedTroves: any
 
-    getPrimaryTrove: any
+    getPrimaryTrove: () => string
     setPrimaryTrove: any
 }
 
@@ -76,19 +76,19 @@ const TroveSelector = (props: TroveSelectorProps) => {
     // TROVE SELECTION (checkboxes)
 
     // The way to encode troveIds in the state variable. Puke.
-    const mangledTroveString = (troveId: string) => `~${troveId}~`
+    // const mangledTroveString = (troveId: string) => `~${troveId}~`
 
-    const isTroveSelected = (troveId: string) =>
-        props.getSelectedTroves().indexOf(mangledTroveString(troveId)) >= 0
+    const selectedTrovesList = () => Array.from(props.getSelectedTroves().keys())
+
+    const isTroveSelected = (troveId: string) => selectedTrovesList().includes(troveId)
 
 
     const handleTroveSelectionChanged = (_: any, troveId: string) => {
-        const wasSelected = isTroveSelected(troveId)
-        let newSelectedTroves = "" + props.getSelectedTroves()
-        if (wasSelected) {
-            newSelectedTroves = newSelectedTroves.replace(mangledTroveString(troveId), "");
+        let newSelectedTroves = props.getSelectedTroves()
+        if (isTroveSelected(troveId)) {
+            newSelectedTroves.delete(troveId)
         } else {
-            newSelectedTroves += mangledTroveString(troveId)
+            newSelectedTroves.set(troveId, 1)
         }
         props.setSelectedTroves(newSelectedTroves)
     }
@@ -120,7 +120,7 @@ const TroveSelector = (props: TroveSelectorProps) => {
     // THE MEAT
 
     function searchAllTrovesIsSet() {
-        return props.getSelectedTroves() === "";
+        return selectedTrovesList().length === 0;
     }
 
     return (
