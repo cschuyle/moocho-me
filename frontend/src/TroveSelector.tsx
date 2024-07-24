@@ -16,7 +16,7 @@ interface TroveSelectorProps {
 }
 
 const TroveSelector = (props: TroveSelectorProps) => {
-    const [troveFilter, setTroveFilter]: [string, any] = useState('');
+    const [troveFilter, setTroveFilter]: [string, any] = useState("");
     const [filteredTroves, setFilteredTroves]: [TroveSummaryFromServer[], any] = useState([]);
     const [showOnlySelected, setShowOnlySelected]: [boolean, any] = useState(false);
 
@@ -29,9 +29,7 @@ const TroveSelector = (props: TroveSelectorProps) => {
     const handleTroveFilterChanged = (input: React.ChangeEvent<HTMLInputElement>) => {
         input.preventDefault();
         setTroveFilter(input.target.value);
-        if (input.target.value === "") {
-            filterTroveList(input.target.value)
-        }
+        filterTroveList(input.target.value)
     };
 
     function filterTroveList(theFilter: string) {
@@ -49,12 +47,8 @@ const TroveSelector = (props: TroveSelectorProps) => {
         setFilteredTroves(filtered)
     }
 
-    const handleFilterTroves = (e: React.ChangeEvent<any>) => {
-        e.preventDefault();
-        filterTroveList(troveFilter);
-    };
-
     const handleKeyDown = (e: any) => {
+        // e.preventDefault()
         if (e.key === "Enter") {
             filterTroveList(troveFilter);
         }
@@ -75,18 +69,19 @@ const TroveSelector = (props: TroveSelectorProps) => {
 
     // TROVE SELECTION (checkboxes)
 
-    // The way to encode troveIds in the state variable. Puke.
-    // const mangledTroveString = (troveId: string) => `~${troveId}~`
-
     const selectedTrovesList = () => Array.from(props.getSelectedTroves().keys())
 
     const isTroveSelected = (troveId: string) => selectedTrovesList().includes(troveId)
 
 
-    const handleTroveSelectionChanged = (_: any, troveId: string) => {
-        let newSelectedTroves = props.getSelectedTroves()
+    const handleTroveSelectionChanged = (e: any, troveId: string) => {
+        e.preventDefault();
+        let newSelectedTroves = new Map(props.getSelectedTroves())
         if (isTroveSelected(troveId)) {
             newSelectedTroves.delete(troveId)
+            if (isTrovePrimarySelected(troveId)) {
+                props.setPrimaryTrove("")
+            }
         } else {
             newSelectedTroves.set(troveId, 1)
         }
@@ -108,7 +103,6 @@ const TroveSelector = (props: TroveSelectorProps) => {
 
     const handleShowOnlySelectedChanged = () => {
         setShowOnlySelected(!showOnlySelected)
-        setTroveFilter("")
         filterTroveList(troveFilter);
     }
 
@@ -127,38 +121,36 @@ const TroveSelector = (props: TroveSelectorProps) => {
         <>
             <Form onSubmit={onFormSubmit}>
                 <InputGroup>
-                    <Button
-                        onClick={handleFilterTroves}>filter
-                    </Button>
                     <Form.Control
                         type="search"
                         id="troveFilter"
+                        value={troveFilter}
                         placeholder='filter by Trove name'
                         onChange={handleTroveFilterChanged}
                         onKeyDown={handleKeyDown}
                     />
+
+                    {!searchAllTrovesIsSet() &&
+                        <Form.Check // prettier-ignore
+                            type="switch"
+                            id="show-only-selected"
+                            label="(only selected)"
+                            checked={showOnlySelected}
+                            onChange={handleShowOnlySelectedChanged}
+                        />
+                    }
                 </InputGroup>
                 {!searchAllTrovesIsSet() &&
                     <Button
-                        variant="outline-primary"
+                        variant="outline-secondary"
                         onClick={handleSelectSearchAllTroves}
                     >
                         Search all troves
                     </Button>
                 }
             </Form>
-
-            {!searchAllTrovesIsSet() &&
-                <Form.Check // prettier-ignore
-                    type="switch"
-                    id="show-only-selected"
-                    label="Show only selected Troves"
-                    checked={showOnlySelected}
-                    onChange={handleShowOnlySelectedChanged}
-                />
-            }
             {searchAllTrovesIsSet() &&
-                <p>All troves will be searched. To limit search, select troves to search.</p>}
+                <p>All troves will be searched. You may select which troves to search.</p>}
 
             {filteredTroves.map((trove) => (
                 <div>
