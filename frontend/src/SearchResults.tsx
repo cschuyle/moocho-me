@@ -71,14 +71,16 @@ interface SearchResultsProps {
     getTroveShortName: (troveId: string) => string
 }
 
+enum HitType { Primary, Secondary }
+
 export interface SearchResult {
-    secondaryHits: SearchResult[]
     key: React.Key | null | undefined
     troveId: string
     troveShortName: string
     title: string
     score: number
     shortName: string
+    hitType: HitType
 }
 
 const SearchResults = (props: SearchResultsProps) => {
@@ -132,7 +134,7 @@ const SearchResults = (props: SearchResultsProps) => {
         })
     }
 
-    function mapItemHit(hit: ItemHitFromServer, parentKey: string = ""): SearchResult {
+    function mapItemHit(hit: ItemHitFromServer, parentKey: string = "", hitType: HitType = HitType.Primary): SearchResult {
         return {
             key: hit.troveId + hit.doc + parentKey,
             score: Math.floor(hit.score * 100),
@@ -140,21 +142,21 @@ const SearchResults = (props: SearchResultsProps) => {
             troveShortName: props.getTroveShortName(hit.troveId),
             troveId: hit.troveId,
             shortName: props.getTroveShortName(hit.troveId),
-            secondaryHits: []
+            hitType: hitType
         }
     }
 
     function mapSecondaryHits(secondaryHits: ItemHitFromServer[], parentKey: string) {
         return secondaryHits.map((secondaryHit: ItemHitFromServer) => {
-            return mapItemHit(secondaryHit, parentKey)
+            return mapItemHit(secondaryHit, parentKey, HitType.Secondary)
         })
     }
 
     function mapSearchResults(searchResults: SearchResultFromServer[]): SearchResult[] {
-        return searchResults.map((searchResult: SearchResultFromServer) => {
+        return searchResults.flatMap((searchResult: SearchResultFromServer) => {
             let primaryHit: SearchResult = mapItemHit(searchResult.primaryHit)
-            primaryHit["secondaryHits"] = mapSecondaryHits(searchResult.secondaryHits, "" + primaryHit.key)
-            return primaryHit
+            const secondaryHits = mapSecondaryHits(searchResult.secondaryHits, "" + primaryHit.key)
+            return [primaryHit, ...secondaryHits]
         })
     }
 
@@ -289,7 +291,7 @@ const SearchResults = (props: SearchResultsProps) => {
                 </thead>
                 <tbody>
                 {table.getRowModel().rows.map(row => (
-                    <tr key={row.id}>
+                    <tr key={row.id} className={row.original.hitType === HitType.Primary ? "" : "table-secondary"}>
                         {row.getVisibleCells().map(cell => (
                             <td key={cell.id}>
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
