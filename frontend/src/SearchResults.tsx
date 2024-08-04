@@ -1,12 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 
-import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-
 import {Form, InputGroup} from 'react-bootstrap';
 
 import SelectedTroveSummary from "./SelectedTroveSummary"
+
+import {
+    createColumnHelper,
+    flexRender,
+    getCoreRowModel, Table,
+    useReactTable
+} from '@tanstack/react-table'
 
 import {
     ItemHitFromServer,
@@ -212,6 +217,28 @@ const SearchResults = (props: SearchResultsProps) => {
         [props]
     )
 
+    //https://tanstack.com/table/latest/docs/framework/react/examples/basic
+    const columnHelper = createColumnHelper<SearchResult>()
+
+    const columns = [
+        columnHelper.accessor(row => row.score, {
+            header: 'Score',
+            cell: item => <span>{item.getValue()}%</span>
+        }),
+        columnHelper.accessor(row => row.troveShortName, {
+            header: 'Trove'
+        }),
+        columnHelper.accessor(row => row.title, {
+            header: 'Title'
+        })
+    ]
+
+    const table : Table<SearchResult> = useReactTable({
+        data: resultItems,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+    })
+
     // THE MEAT
 
     return (
@@ -242,34 +269,36 @@ const SearchResults = (props: SearchResultsProps) => {
 
             </Form>
 
-            <Table bordered hover size="sm">
+
+            <table className="table table-sm table-bordered table-hover" >
                 <thead>
-                <tr>
-                    <th>Score</th>
-                    <th>Trove</th>
-                    <th>Title</th>
-                </tr>
+                {table.getHeaderGroups().map(headerGroup => (
+                    <tr className="table-secondary" key={headerGroup.id}>
+                        {headerGroup.headers.map(header => (
+                            <th key={header.id}>
+                                {header.isPlaceholder
+                                    ? null
+                                    : flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                    )}
+                            </th>
+                        ))}
+                    </tr>
+                ))}
                 </thead>
                 <tbody>
-                {/*TODO: Keys for rows*/}
-                {resultItems.map((item: SearchResult) => (
-                    <>
-                        <tr className="table-secondary" key={item.key}>
-                            <td>{item.score}%</td>
-                            <td>{item.troveShortName}</td>
-                            <td>{item.title}</td>
-                        </tr>
-                        {item.secondaryHits!.map((secondary: SearchResult) => (
-                            <tr key={secondary.key}>
-                                <td>{Math.floor(secondary.score * 100)}%</td>
-                                <td>{secondary.troveShortName}</td>
-                                <td>{secondary.title}</td>
-                            </tr>
+                {table.getRowModel().rows.map(row => (
+                    <tr key={row.id}>
+                        {row.getVisibleCells().map(cell => (
+                            <td key={cell.id}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
                         ))}
-                    </>
+                    </tr>
                 ))}
                 </tbody>
-            </Table>
+            </table>
         </>
     )
 }
