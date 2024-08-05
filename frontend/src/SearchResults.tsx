@@ -9,7 +9,9 @@ import SelectedTroveSummary from "./SelectedTroveSummary"
 import {
     createColumnHelper,
     flexRender,
-    getCoreRowModel, Table,
+    getCoreRowModel,
+    getSortedRowModel,
+    Table,
     useReactTable
 } from '@tanstack/react-table'
 
@@ -225,20 +227,24 @@ const SearchResults = (props: SearchResultsProps) => {
     const columns = [
         columnHelper.accessor(row => row.score, {
             header: 'Score',
+            sortingFn: 'basic',
             cell: item => <span>{item.getValue()}%</span>
         }),
         columnHelper.accessor(row => row.troveShortName, {
-            header: 'Trove'
+            header: 'Trove',
+            sortingFn: 'alphanumeric'
         }),
         columnHelper.accessor(row => row.title, {
-            header: 'Title'
+            header: 'Title',
+            sortingFn: 'alphanumeric'
         })
     ]
 
-    const table : Table<SearchResult> = useReactTable({
+    const table: Table<SearchResult> = useReactTable({
         data: resultItems,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(), //provide a sorting row model
     })
 
     // THE MEAT
@@ -272,18 +278,40 @@ const SearchResults = (props: SearchResultsProps) => {
             </Form>
 
 
-            <table className="table table-sm table-bordered table-hover" >
+            <table className="table table-sm table-bordered table-hover">
                 <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                     <tr className="table-secondary" key={headerGroup.id}>
                         {headerGroup.headers.map(header => (
-                            <th key={header.id}>
-                                {header.isPlaceholder
-                                    ? null
-                                    : flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
+                                <th key={header.id} colSpan={header.colSpan}>
+                                {header.isPlaceholder ? null : (
+                                    <div
+                                        className={
+                                            header.column.getCanSort()
+                                                ? 'cursor-pointer select-none'
+                                                : ''
+                                        }
+                                        onClick={header.column.getToggleSortingHandler()}
+                                        title={
+                                            header.column.getCanSort()
+                                                ? header.column.getNextSortingOrder() === 'asc'
+                                                    ? 'Sort ascending'
+                                                    : header.column.getNextSortingOrder() === 'desc'
+                                                        ? 'Sort descending'
+                                                        : 'Clear sort'
+                                                : undefined
+                                        }
+                                    >
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                        {{
+                                            asc: ' ↑',
+                                            desc: ' ↓',
+                                        }[header.column.getIsSorted() as string] ?? null}
+                                    </div>
+                                )}
                             </th>
                         ))}
                     </tr>
