@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import Button from 'react-bootstrap/Button';
 import {Form, InputGroup} from 'react-bootstrap';
+import Spinner from 'react-bootstrap/Spinner';
 
 import SelectedTroveSummary from "./SelectedTroveSummary"
 
@@ -88,10 +89,10 @@ export interface SearchResult {
 const SearchResults = (props: SearchResultsProps) => {
 
     // SEARCH
-
     const [searchText, setSearchText]: [string, any] = useState('')
     const [resultItems, setResultItems]: [SearchResult[], any] = useState([])
     const [troveHits, setTroveHits]: [TroveHitFromServer[], any] = useState([])
+    const [searchInProgress, setSearchInProgress]: [boolean, any] = useState(false)
 
     function getSelectedTrovesQuery() {
         return (Array.from(props.selectedTroves.keys()).length === 0)
@@ -163,12 +164,15 @@ const SearchResults = (props: SearchResultsProps) => {
     }
 
     const doSearch = (searchText: string) => {
+        setSearchInProgress(true)
         doSearchRequest(searchText).then((response: QueryResultFromServer) => {
-            setTroveHits(mapTroveHits(response.troveHits)
-                .filter((troveHit: TroveHitSummary | null) => troveHit !== null))
+                setTroveHits(mapTroveHits(response.troveHits)
+                    .filter((troveHit: TroveHitSummary | null) => troveHit !== null))
 
-            setResultItems(mapSearchResults(response.searchResults))
-        })
+                setResultItems(mapSearchResults(response.searchResults))
+                setSearchInProgress(false)
+            }
+        )
     }
 
     const handleKeyDown = (e: any) => {
@@ -277,58 +281,75 @@ const SearchResults = (props: SearchResultsProps) => {
 
             </Form>
 
+            {searchInProgress &&
+                <div
+                    style={{
+                        width: "100%",
+                        height: "100",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}
+                >
+                    <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                </div>
 
-            <table className="table table-sm table-bordered table-hover">
-                <thead>
-                {table.getHeaderGroups().map(headerGroup => (
-                    <tr className="table-secondary" key={headerGroup.id}>
-                        {headerGroup.headers.map(header => (
+                ||
+                
+                <table className="table table-sm table-bordered table-hover">
+                    <thead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <tr className="table-secondary" key={headerGroup.id}>
+                            {headerGroup.headers.map(header => (
                                 <th key={header.id} colSpan={header.colSpan}>
-                                {header.isPlaceholder ? null : (
-                                    <div
-                                        className={
-                                            header.column.getCanSort()
-                                                ? 'cursor-pointer select-none'
-                                                : ''
-                                        }
-                                        onClick={header.column.getToggleSortingHandler()}
-                                        title={
-                                            header.column.getCanSort()
-                                                ? header.column.getNextSortingOrder() === 'asc'
-                                                    ? 'Sort ascending'
-                                                    : header.column.getNextSortingOrder() === 'desc'
-                                                        ? 'Sort descending'
-                                                        : 'Clear sort'
-                                                : undefined
-                                        }
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                        {{
-                                            asc: ' ↑',
-                                            desc: ' ↓',
-                                        }[header.column.getIsSorted() as string] ?? null}
-                                    </div>
-                                )}
-                            </th>
-                        ))}
-                    </tr>
-                ))}
-                </thead>
-                <tbody>
-                {table.getRowModel().rows.map(row => (
-                    <tr key={row.id} className={row.original.hitType === HitType.Primary ? "" : "table-secondary"}>
-                        {row.getVisibleCells().map(cell => (
-                            <td key={cell.id}>
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </td>
-                        ))}
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+                                    {header.isPlaceholder ? null : (
+                                        <div
+                                            className={
+                                                header.column.getCanSort()
+                                                    ? 'cursor-pointer select-none'
+                                                    : ''
+                                            }
+                                            onClick={header.column.getToggleSortingHandler()}
+                                            title={
+                                                header.column.getCanSort()
+                                                    ? header.column.getNextSortingOrder() === 'asc'
+                                                        ? 'Sort ascending'
+                                                        : header.column.getNextSortingOrder() === 'desc'
+                                                            ? 'Sort descending'
+                                                            : 'Clear sort'
+                                                    : undefined
+                                            }
+                                        >
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                            {{
+                                                asc: ' ↑',
+                                                desc: ' ↓',
+                                            }[header.column.getIsSorted() as string] ?? null}
+                                        </div>
+                                    )}
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                    </thead>
+                    <tbody>
+                    {table.getRowModel().rows.map(row => (
+                        <tr key={row.id} className={row.original.hitType === HitType.Primary ? "" : "table-secondary"}>
+                            {row.getVisibleCells().map(cell => (
+                                <td key={cell.id}>
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            }
         </>
     )
 }
