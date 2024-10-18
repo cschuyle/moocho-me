@@ -48,10 +48,10 @@ class TroveRepository(
     }
 
     private fun getTroveFromAws(troveDef: TroveDef): Trove {
-        logger.info("Loading [bucket: ${bucketName}] Trove: ${troveDef.id}")
+        logger.info("Loading from S3: bucket [${bucketName}], key (prefix/trove) [${troveDef.bucketPrefix}/${troveDef.id}]")
         val s3Object = amazonS3Client.getObject(
             GetObjectRequest(
-                bucketName, "${troveDef.bucketPrefix}/${troveDef.id}"
+                bucketName, "${troveDef.bucketPrefix}/${troveDef.id}.json"
             )
         )
         val trove = objectMapper.readValue<Trove>(s3Object.objectContent)
