@@ -57,7 +57,7 @@ class SecurityConfiguration {
     fun securityFilterChain(
         http: HttpSecurity
     ): SecurityFilterChain {
-        val disableSecurity = (System.getenv("MY_ENV") ?: "").ifEmpty { "default_value" }
+        val disableSecurity = (System.getenv("DISABLE_SECURITY") ?: "").ifEmpty { "false" }
 
         if ("true".equals(disableSecurity)) {
             http.invoke {
