@@ -1,5 +1,6 @@
 package com.dragnon.moocho.api
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -53,16 +54,28 @@ class SecurityConfiguration {
     }
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.invoke {
-            authorizeRequests {
-                authorize(anyRequest, authenticated)
+    fun securityFilterChain(
+        http: HttpSecurity
+    ): SecurityFilterChain {
+        val disableSecurity = (System.getenv("MY_ENV") ?: "").ifEmpty { "default_value" }
+
+        if ("true".equals(disableSecurity)) {
+            http.invoke {
+                authorizeRequests {
+                    authorize(anyRequest, authenticated)
+                }
+                csrf { disable() }
             }
-            csrf { disable() }
-            formLogin { }
-            httpBasic { }
+        } else {
+            http.invoke {
+                authorizeRequests {
+                    authorize(anyRequest, authenticated)
+                }
+                csrf { disable() }
+                formLogin { }
+                httpBasic { }
+            }
         }
         return http.build();
     }
-
 }
