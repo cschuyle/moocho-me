@@ -10,10 +10,15 @@ Actually, the data (except username and password):
 
 ### Requirements
 
+#### Local dev
 - Java 21
 - Node.js v21.7.1
-- yarn v1.22.22
-- AWS account
+- yarn v1.22.22 or npm
+- direnv helps
+#### Deploy
+- AWS account for S3
+- Postgres DB
+- Host for Java Spring apps. Currently use Heroku for hosting and Postgres DB
 
 ### Environment variables
 
