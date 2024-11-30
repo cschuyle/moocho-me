@@ -18,7 +18,7 @@ class DuplicateFinderTest {
         )
 
         assertThat(
-            searcher.findDuplicates(troves, listOf("id-1"), listOf("id-0", "id-2"), "*", 500, 0.1, 3), `is`(
+            searcher.findDuplicates(troves, listOf("id-1"), listOf("id-0", "id-2"), SearchController.CrossTroveOperation.Duplicates,"*", 500, 0.1, 3), `is`(
                 listOf(
                     SearchResult(
                         ItemHit(1, 1.0, "id-1", "thing 1"),

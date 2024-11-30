@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-#set -o errexit # set -e
+set -o errexit # set -e
 set -o pipefail
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 script_file=$(basename "$0")
 
+set -x
 
 docker-compose up --detach
 # God I hate this
-sleep 3
+sleep 10
 docker exec moochome-psql psql -h localhost -U postgres -f /var/database-scripts/create-auth-tables.sql
   docker exec moochome-psql psql -h localhost -U postgres -f /var/database-scripts/insert-guest-credentials.sql
 
