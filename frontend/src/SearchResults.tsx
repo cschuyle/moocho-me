@@ -24,6 +24,7 @@ import {
     TroveHitSummary,
     TroveSummaryFromServer
 } from "./ServerData";
+import {CrossTroveOperation} from "./TroveSelector";
 
 /*
 GET
@@ -71,6 +72,7 @@ interface SearchResultsProps {
     getTroveSummary: (troveId: string) => TroveSummaryFromServer
     selectedTroves: Map<string, number>
     primaryTrove: string
+    operation: CrossTroveOperation
     getTroveShortName: (troveId: string) => string
 }
 
@@ -107,10 +109,10 @@ const SearchResults = (props: SearchResultsProps) => {
                 .join(",")
     }
 
-    const doSearchRequest = async (searchText: string) => {
+    const doSearchRequest = async (searchText: string, operation: CrossTroveOperation) => {
         try {
             const selectedTrovesQuery = getSelectedTrovesQuery()
-            const {data: response} = await axios.get(`/search?troves=${selectedTrovesQuery}&query=${encodeURI(searchText)}&maxResults=3000`)
+            const {data: response} = await axios.get(`/search?troves=${selectedTrovesQuery}&query=${encodeURI(searchText)}&operation=${operation}&maxResults=3000`)
             return response
         } catch (error) {
             console.log(error)
@@ -163,9 +165,9 @@ const SearchResults = (props: SearchResultsProps) => {
         })
     }
 
-    const doSearch = (searchText: string) => {
+    const doSearch = (searchText: string, operation: CrossTroveOperation) => {
         setSearchInProgress(true)
-        doSearchRequest(searchText).then((response: QueryResultFromServer) => {
+        doSearchRequest(searchText, operation).then((response: QueryResultFromServer) => {
                 setTroveHits(mapTroveHits(response.troveHits)
                     .filter((troveHit: TroveHitSummary | null) => troveHit !== null))
 
@@ -178,20 +180,20 @@ const SearchResults = (props: SearchResultsProps) => {
     const handleKeyDown = (e: any) => {
         if (e.key === "Enter") {
             e.preventDefault()
-            doSearch(searchText)
+            doSearch(searchText, props.operation)
         }
         if (e.key === "Escape") {
             setSearchText("")
-            doSearch("")
+            doSearch("", props.operation)
         }
     }
 
     const handleDoSearch = (_: React.ChangeEvent<any>) =>
-        doSearch(searchText)
+        doSearch(searchText, props.operation)
 
     const handleSearchAll = (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setSearchText("*")
-        doSearch("*")
+        doSearch("*", props.operation)
     }
 
     const handleSearchTextChanged = (input: React.ChangeEvent<HTMLInputElement>) => {
@@ -297,7 +299,7 @@ const SearchResults = (props: SearchResultsProps) => {
                 </div>
 
                 ||
-                
+
                 <table className="table table-sm table-bordered table-hover">
                     <thead>
                     {table.getHeaderGroups().map(headerGroup => (

@@ -5,9 +5,9 @@ import Button from 'react-bootstrap/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 
 import './App.css';
-import TroveSelector from "./TroveSelector";
+import TroveSelector, {CrossTroveOperation} from "./TroveSelector";
 import SearchResults from './SearchResults';
-import {TroveHitSummary, TroveSummaryFromServer} from "./ServerData";
+import {TroveSummaryFromServer} from "./ServerData";
 
 const fetchTroveSummaries = async () => {
     try {
@@ -24,6 +24,7 @@ const App = () => {
     // const [troveHitSummaries, setTroveHitSummaries]: [TroveSummaryFromServer[], any] = useState([])
     const [selectedTroves, setSelectedTroves]: [Map<string, number>, any] = useState(new Map())
     const [primaryTrove, setPrimaryTrove]: [string, any] = useState("")
+    const [crossTroveOperation, setCrossTroveOperation]: [CrossTroveOperation, any] = useState(CrossTroveOperation.Duplicates)
     const [troveShortNameMap, setTroveShortNameMap]: [Map<string, string>, any] = useState(new Map())
 
     const getSelectedTroves = () => selectedTroves
@@ -61,6 +62,7 @@ const App = () => {
     const getTroveSummary = (troveId: string) => allTroveSummaries.get(troveId)!!
 
     const getPrimaryTrove = () => primaryTrove
+    const getCrossTroveOperation = () => crossTroveOperation
     const getAllTroveSummaries = () => allTroveSummaries
 
     return (
@@ -73,6 +75,7 @@ const App = () => {
                 getTroveSummary={getTroveSummary}
                 selectedTroves={selectedTroves}
                 primaryTrove={primaryTrove}
+                operation={crossTroveOperation}
                 getTroveShortName={getTroveShortName}
             />
 
@@ -90,6 +93,9 @@ const App = () => {
 
                         getPrimaryTrove={getPrimaryTrove}
                         setPrimaryTrove={setPrimaryTrove}
+
+                        getCrossTroveOperation={getCrossTroveOperation}
+                        setCrossTroveOperation={setCrossTroveOperation}
                     />
                 </Offcanvas.Body>
             </Offcanvas>

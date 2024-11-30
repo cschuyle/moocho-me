@@ -5,6 +5,10 @@ import Form from 'react-bootstrap/Form';
 import {InputGroup} from "react-bootstrap";
 import {TroveSummaryFromServer} from "./ServerData";
 
+export enum CrossTroveOperation {
+    Duplicates = "Duplicates", Uniques = "Uniques"
+}
+
 interface TroveSelectorProps {
     getAllTroveSummaries: () => Map<string, TroveSummaryFromServer>
 
@@ -13,50 +17,71 @@ interface TroveSelectorProps {
 
     getPrimaryTrove: () => string
     setPrimaryTrove: (troveId: string) => null
+
+    getCrossTroveOperation: () => CrossTroveOperation
+    setCrossTroveOperation: (operation: CrossTroveOperation | null) => null
 }
 
 const TroveSelector = (props: TroveSelectorProps) => {
-    const [troveFilter, setTroveFilter]: [string, any] = useState("");
-    const [filteredTroves, setFilteredTroves]: [TroveSummaryFromServer[], any] = useState([]);
-    const [showOnlySelected, setShowOnlySelected]: [boolean, any] = useState(false);
+    const [troveFilterState, setTroveFilterState]: [string, any] = useState("");
+    const [filteredTrovesState, setFilteredTrovesState]: [TroveSummaryFromServer[], any] = useState([]);
+
+    function justSelectedTroveIds() {
+        return Array.from(props.getSelectedTroves().keys())
+            .filter((troveId) => troveId !== props.getPrimaryTrove());
+    }
+
+    function justPrimarySelectedTroveIds() {
+        return Array.from(props.getAllTroveSummaries().keys())
+            .filter((troveId) => troveId === props.getPrimaryTrove());
+    }
+
+    function searchAllTrovesIsSet() {
+        return justSelectedTroveIds().length === 0 && justPrimarySelectedTroveIds().length === 0;
+    }
+
+
+    const troveNameFor = (troveId: string) =>
+        props.getAllTroveSummaries().get(troveId)?.name
 
     React.useEffect(() => {
-        filterTroveList(troveFilter)
+        filterTroveList(troveFilterState)
     }, [props]);
 
     // TROVE FILTER (textbox)
 
     const handleTroveFilterChanged = (input: React.ChangeEvent<HTMLInputElement>) => {
         input.preventDefault();
-        setTroveFilter(input.target.value);
+        setTroveFilterState(input.target.value);
         filterTroveList(input.target.value)
     };
 
     function filterTroveList(theFilter: string) {
 
         if (theFilter === "") {
-            setFilteredTroves(Array.from(props.getAllTroveSummaries().values()))
+            setFilteredTrovesState(Array.from(props.getAllTroveSummaries().values()))
             return
         }
         const filtered = Array.from(props.getAllTroveSummaries().values())
             .filter(trove => {
-                    return trove.name.toLowerCase().includes(theFilter.toLowerCase()) ||
-                        trove.troveId.toLowerCase().includes(troveFilter.toLowerCase())
+                    return trove.name.toLowerCase().includes(theFilter.toLowerCase())
+                    // || // TODO Why did I have this here?
+                    // trove.troveId.toLowerCase().includes(troveFilterState.toLowerCase())
                 }
             )
-        setFilteredTroves(filtered)
+        setFilteredTrovesState(filtered)
     }
 
     const handleKeyDown = (e: any) => {
         // e.preventDefault()
         if (e.key === "Enter") {
-            filterTroveList(troveFilter);
+            filterTroveList(troveFilterState);
         }
         if (e.key === "Escape") {
             // e.preventDefault()
             e.stopPropagation()
-            setTroveFilter("")
-            filterTroveList(troveFilter)
+            setTroveFilterState("")
+            filterTroveList("")
         }
     };
 
@@ -66,13 +91,11 @@ const TroveSelector = (props: TroveSelectorProps) => {
         e.stopPropagation();
     };
 
-
     // TROVE SELECTION (checkboxes)
 
-    const selectedTrovesList = () => Array.from(props.getSelectedTroves().keys())
-
-    const isTroveSelected = (troveId: string) => selectedTrovesList().includes(troveId)
-
+    const isTroveSelected = (troveId: string) =>
+        justSelectedTroveIds().includes(troveId)
+        || justPrimarySelectedTroveIds().includes(troveId)
 
     const handleTroveSelectionChanged = (e: any, troveId: string) => {
         e.preventDefault();
@@ -95,15 +118,13 @@ const TroveSelector = (props: TroveSelectorProps) => {
 
     const handlePrimaryTroveSelectionChanged = (_: any, troveId: string) => {
         if (props.getPrimaryTrove() === troveId) {
+            console.log(`YES primary trove is ${troveId}.`)
             props.setPrimaryTrove("")
+            props.setCrossTroveOperation(null)
         } else {
+            console.log(`NO primary trove is NOT ${troveId}.`)
             props.setPrimaryTrove(troveId)
         }
-    }
-
-    const handleShowOnlySelectedChanged = () => {
-        setShowOnlySelected(!showOnlySelected)
-        filterTroveList(troveFilter);
     }
 
     const handleSelectSearchAllTroves = () => {
@@ -113,8 +134,9 @@ const TroveSelector = (props: TroveSelectorProps) => {
 
     // THE MEAT
 
-    function searchAllTrovesIsSet() {
-        return selectedTrovesList().length === 0;
+    function handleCrossTroveOperationChanged(e: React.ChangeEvent<HTMLSelectElement>) {
+        e.preventDefault()
+        props.setCrossTroveOperation(e.target.value as CrossTroveOperation)
     }
 
     return (
@@ -124,59 +146,137 @@ const TroveSelector = (props: TroveSelectorProps) => {
                     <Form.Control
                         type="search"
                         id="troveFilter"
-                        value={troveFilter}
+                        value={troveFilterState}
                         placeholder='filter by Trove name'
                         onChange={handleTroveFilterChanged}
                         onKeyDown={handleKeyDown}
                     />
-
-                    {!searchAllTrovesIsSet() &&
-                        <Form.Check // prettier-ignore
-                            type="switch"
-                            id="show-only-selected"
-                            label="(only selected)"
-                            checked={showOnlySelected}
-                            onChange={handleShowOnlySelectedChanged}
-                        />
-                    }
                 </InputGroup>
                 {!searchAllTrovesIsSet() &&
                     <Button
                         variant="outline-secondary"
                         onClick={handleSelectSearchAllTroves}
                     >
-                        Search all troves
+                        Clear all selections
                     </Button>
                 }
             </Form>
-            {searchAllTrovesIsSet() &&
-                <p>All troves will be searched. You may select which troves to search.</p>}
+            {/*{searchAllTrovesIsSet() &&*/}
+            {/*    <p>All troves will be searched. You may select which troves to search.</p>}*/}
 
-            {filteredTroves.map((trove) => (
-                <div>
-                    {(!showOnlySelected || isTroveSelected(trove.troveId)) &&
+            {justSelectedTroveIds().length > 0 && !props.getPrimaryTrove() &&
+                <>
+                    <hr/>
+                    <h6> No Primary Trove selected
+                    </h6>
+                    <p>You may select a Trove to be Primary, and then select an operation between it and the other selected Troves.</p>
+                </>
+            }
+            {props.getPrimaryTrove() &&
+                <>
+                    <hr/>
+                    <h6> Primary Trove
+                    </h6>
+                    <>
+                        Operation for Primary Trove:
+                        <Form.Select
+                            onChange={(e) => handleCrossTroveOperationChanged(e)}
+                            value={props.getCrossTroveOperation()}
+                        >
+                            <option value="Duplicates">Find Duplicates in Other Troves</option>
+                            <option value="Uniques">Find Items Unique to this Trove</option>
+                        </Form.Select>
+                    </>
+                </>}
+            {justPrimarySelectedTroveIds()
+                .map((troveId) => (
+                    <div>
                         <Form.Check
-                            key={trove.troveId}
+                            key={troveId}
                             inline
-                            checked={isTroveSelected(trove.troveId)}
-                            label={trove.name}
-                            onChange={(e: any) => handleTroveSelectionChanged(e, trove.troveId)}
+                            checked={true}
+                            label={troveNameFor(troveId)}
+                            onChange={(e: any) => handleTroveSelectionChanged(e, troveId)}
                         />
-                    }
-                    {isTroveSelected(trove.troveId) &&
                         <Form.Check
-                            key={"primary-selector-" + trove.troveId}
+                            key={"primary-selector-" + troveId}
                             type="switch"
                             inline
                             reverse
-                            checked={isTrovePrimarySelected(trove.troveId)}
-                            onChange={(e: any) => handlePrimaryTroveSelectionChanged(e, trove.troveId)}
+                            checked={true}
+                            onChange={(e: any) => handlePrimaryTroveSelectionChanged(e, troveId)}
                         />
-                    }
-                </div>
-            ))}
+                    </div>
+                ))
+            }
+
+            {justSelectedTroveIds().length === 0 && justPrimarySelectedTroveIds().length === 0 &&
+                <>
+                    <hr/>
+                    <h6> No Troves selected
+                    </h6>
+                    <p>All troves will be searched. You may select which troves to search.</p>
+                </>
+            }
+
+            {justSelectedTroveIds().length > 0 && justPrimarySelectedTroveIds().length > 0 &&
+                <>
+                    <hr/>
+                    <h6> Other Troves
+                    </h6>
+                </>
+            }
+            {justSelectedTroveIds().length > 0 && justPrimarySelectedTroveIds().length === 0 &&
+                <>
+                    <hr/>
+                    <h6> Selected troves
+                    </h6>
+                </>
+            }
+            {justSelectedTroveIds()
+                .filter((troveId) => !isTrovePrimarySelected(troveId))
+                .map((troveId) => (
+                    <div>
+                        <Form.Check
+                            key={troveId}
+                            inline
+                            checked={true}
+                            label={troveNameFor(troveId)}
+                            onChange={(e: any) => handleTroveSelectionChanged(e, troveId)}
+                        />
+                        <Form.Check
+                            key={"primary-selector-" + troveId}
+                            type="switch"
+                            inline
+                            reverse
+                            checked={false}
+                            onChange={(e: any) => handlePrimaryTroveSelectionChanged(e, troveId)}
+                        />
+                    </div>
+                ))
+            }
+            <hr/>
+            <h6> Available Troves
+            </h6>
+            <>
+                {
+                    filteredTrovesState
+                        .filter((trove) => !isTroveSelected(trove.troveId))
+                        .map((trove) => (
+                            <div>
+                                <Form.Check
+                                    key={trove.troveId}
+                                    inline
+                                    checked={false}
+                                    label={trove.name}
+                                    onChange={(e: any) => handleTroveSelectionChanged(e, trove.troveId)}
+                                />
+                            </div>
+                        ))}
+            </>
         </>
-    );
-};
+    )
+}
+
 
 export default TroveSelector;

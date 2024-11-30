@@ -13,9 +13,10 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
     fun search(
         @RequestParam troves: String,
         @RequestParam query: String,
-        @RequestParam maxResults: Int
+        @RequestParam maxResults: Int,
+        @RequestParam operation: String?
     ): QueryResult {
-        val searchResults = getSearchResults(troves, query, maxResults)
+        val searchResults = getSearchResults(troves, query, operation, maxResults)
         return QueryResult(
             // Summary of hits per trove
             getTroveHits(searchResults),
@@ -24,9 +25,15 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
         )
     }
 
+    enum class CrossTroveOperation {
+        Duplicates,
+        Uniques
+    }
+
     private fun getSearchResults(
         trovesString: String,
         query: String,
+        operation: String?,
         maxResults: Int
     ): List<SearchResult> {
         val troveString = trovesString.split(",")
@@ -48,9 +55,14 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
             .filter { troveId -> troveId.matches(Regex(".+:secondary")) || troveId.matches(Regex("[^:]+")) }
             .map { troveId -> troveId.replace(Regex(":.*"), "") }
 
-        val searchResults = if (primaryTroveIds.isNotEmpty() && secondaryTroveIds.isNotEmpty())
-            duplicateFinder.findDuplicates(troves, primaryTroveIds, secondaryTroveIds, query, maxResults)
-        else
+        val searchResults = if (primaryTroveIds.isNotEmpty() && secondaryTroveIds.isNotEmpty()) {
+            val mtoperation: CrossTroveOperation = if (operation != null)
+                CrossTroveOperation.valueOf(operation)
+             else
+                CrossTroveOperation.Duplicates
+
+            duplicateFinder.findDuplicates(troves, primaryTroveIds, secondaryTroveIds, mtoperation, query, maxResults)
+        } else
             Searcher(troves).search(query, maxResults)
 
         return searchResults
@@ -75,12 +87,12 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
 
         fun makeTroveHit(troveId: String, hitCount: Int, hitType: String): TroveHit {
             return TroveHit(
-                troveId=troveId,
-                name=repository.findById(troveId).name,
-                shortName=repository.findById(troveId).shortName,
-                totalCount=repository.findById(troveId).totalCount(),
-                hitType=hitType,
-                hitCount=hitCount
+                troveId = troveId,
+                name = repository.findById(troveId).name,
+                shortName = repository.findById(troveId).shortName,
+                totalCount = repository.findById(troveId).totalCount(),
+                hitType = hitType,
+                hitCount = hitCount
             )
         }
 

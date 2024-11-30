@@ -14,6 +14,7 @@ class DuplicateFinder() {
         troves: List<Trove>,
         primaryTroveIds: List<String>,
         secondaryTroveIds: List<String>,
+        operation: SearchController.CrossTroveOperation,
         queryString: String,
         maxResults: Int,
         minDupScore: Double = 0.4,
