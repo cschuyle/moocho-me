@@ -9,16 +9,16 @@ class DuplicateFinderTest {
     @Test
     fun test_findDuplicates() {
 
-        val searcher = DuplicateFinder(troves, primaryTroveIds, secondaryTroveIds)
 
         val troves = listOf(
             Trove("id-0", "trove zero", "tr0", listOf("not at all related"), listOf()),
             Trove("id-1", "trove one ", "tr1", listOf("thing 1"), listOf()),
             Trove("id-2", "trove two ", "tr2", listOf("thing 2"), listOf())
         )
+        val searcher = DuplicateFinder(troves, listOf("id-1"), listOf("id-0", "id-2"))
 
         assertThat(
-            searcher.findDuplicates(troves, listOf("id-1"), listOf("id-0", "id-2"), SearchController.CrossTroveOperation.Duplicates,"*", 500, 0.1, 3), `is`(
+            searcher.findDuplicates("*", 500, 0.1, 3), `is`(
                 listOf(
                     SearchResult(
                         ItemHit(1, 1.0, "id-1", "thing 1"),
