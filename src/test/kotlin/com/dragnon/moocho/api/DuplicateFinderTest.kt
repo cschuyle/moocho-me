@@ -9,7 +9,7 @@ class DuplicateFinderTest {
     @Test
     fun test_findDuplicates() {
 
-        val searcher = DuplicateFinder()
+        val searcher = DuplicateFinder(troves, primaryTroveIds, secondaryTroveIds)
 
         val troves = listOf(
             Trove("id-0", "trove zero", "tr0", listOf("not at all related"), listOf()),

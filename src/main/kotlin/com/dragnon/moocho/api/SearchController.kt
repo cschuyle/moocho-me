@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class SearchController(val repository: TroveRepository, val duplicateFinder: DuplicateFinder) {
+class SearchController(val repository: TroveRepository) {
 
     private val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)
 
@@ -61,7 +61,7 @@ class SearchController(val repository: TroveRepository, val duplicateFinder: Dup
              else
                 CrossTroveOperation.Duplicates
 
-            duplicateFinder.findDuplicates(troves, primaryTroveIds, secondaryTroveIds, mtoperation, query, maxResults)
+            DuplicateFinder(troves, primaryTroveIds, secondaryTroveIds).compare(mtoperation, query, maxResults)
         } else
             Searcher(troves).search(query, maxResults)
 
