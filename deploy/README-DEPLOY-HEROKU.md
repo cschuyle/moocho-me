@@ -7,7 +7,7 @@ It should be as simple as `heroku push`, and that's what you do in regular devel
 1. Add Heroku remote
 
 ```bash
-git remote add heroku https://git.heroku.com/moochome.git
+git remote add heroku https://git.heroku.com/moocho-me-web.git
 ```
 
 2. Create the database and seed it with password - see <../README.md>
