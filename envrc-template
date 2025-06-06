@@ -8,40 +8,44 @@ export AWS_REGION='us-west-2'
 
 ## PROD S3
 
-#export MOOCHO_BUCKET_NAME=moocho-test
-#export ENABLE_SECURITY=false
-#export AWS_ACCESS_KEY=FILLMEIN4269
-#export AWS_SECRET_KEY=FillmeinZginiewbrzezinsky4269
+export MOOCHO_BUCKET_NAME=moocho-test
+export ENABLE_SECURITY=false
 
-#export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY
-#export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY
+export AWS_ACCESS_KEY='AKIDOSARECOOL'
+export AWS_REGION='us-west-2'
+export AWS_SECRET_KEY='blah/xyzzy'
+
+export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY
+export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY
 
 ## DEV S3
 
 # These settings are for Minio, which "mocks" AWS S3 for local dev (see ./blob-store)
 # NOTE: This will not work until you go to the database and blob-store directories and follow the setup instructions
 
-export MOOCHO_BUCKET_NAME=moocho-dev
-export AWS_SECRET_KEY='minioadmin'
-export AWS_ACCESS_KEY='minioadmin'
-
-# The following AWS env var needs to be set for local dev with minio:
-export AWS_ENDPOINT_URL=http://localhost:9000
-
-# [for utils, not server] These gotta match the above:
-export MINIO_ROOT_USER=$AWS_ACCESS_KEY
-export MINIO_ROOT_PASSWORD=$AWS_SECRET_KEY
+# export MOOCHO_BUCKET_NAME=moocho-dev
+# export AWS_SECRET_KEY='minioadmin'
+# export AWS_ACCESS_KEY='minioadmin'
+#
+# # The following AWS env var needs to be set for local dev with minio:
+# export AWS_ENDPOINT_URL=http://localhost:9000
+#
+# # [for utils, not server] These gotta match the above:
+# export MINIO_ROOT_USER=$AWS_ACCESS_KEY
+# export MINIO_ROOT_PASSWORD=$AWS_SECRET_KEY
 
 # -------------------------------------------------------------------------------------------------------------------
 # Database config
 # -------------------------------------------------------------------------------------------------------------------
 # [Currently the prod DB is supplied as a heroku addon - log in and look for the prod creds]
 # The following are for the local DB (see ./database)
-host=localhost
-database='postgres'
-user='postgres'
-port=5432
-password='password'
+
+# host=localhost
+# database='postgres'
+# user='postgres'
+# port=5432
+# password='password'
+
 
 export SPRING_DATASOURCE_URL="jdbc:postgresql://$host/$database"
 export SPRING_DATASOURCE_USERNAME="$user"
