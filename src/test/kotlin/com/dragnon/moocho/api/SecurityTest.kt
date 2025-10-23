@@ -5,12 +5,12 @@ import kotlin.test.Test
 
 class SecurityTest {
 
-    private val API_KEY_PEPPER = "pepper"
+    private val API_KEY_PEPPER = "secret-key-aka-pepper"
 
     @Test
     fun `should compute API key HMAC hash correctly`() {
         val apiKey = "test-api-key"
-        val hmacHashHex = ApiKeyService(API_KEY_PEPPER).hmacHex(apiKey)
-        assertThat(hmacHashHex).isEqualTo("f5ddaaa067f0eb0cf47d8aad45f2086bc5774948b7b7209b6e091839feedda0a")
+        val hmacHashHex = ApiKeyService(API_KEY_PEPPER).getHmacHashHex(apiKey)
+        assertThat(hmacHashHex).isEqualTo("50a62eefb989e360a7cf2296e5594411ca8bc7ba9d2c413c0b23372215efb5d4")
     }
 }
