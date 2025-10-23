@@ -132,7 +132,7 @@ class ApiKeyAuthFilter(
 
 @Service
 class ApiKeyService(
-    @org.springframework.beans.factory.annotation.Value("\${api.key.pepper:}")
+    @org.springframework.beans.factory.annotation.Value("\${api.key.pepper:null}")
     private val apiKeyPepper: String?
 ) {
     private val hmacSecret: ByteArray = (apiKeyPepper?.takeIf { it.isNotBlank() }
