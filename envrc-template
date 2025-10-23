@@ -67,3 +67,6 @@ export DB_DIR="$(pwd)/database"
 
 # Local blobstore (S3 prod, Minio local) persistent volume
 export BLOBSTORE_DIR="$(pwd)/blob-store"
+
+export API_KEY_PEPPER="secret-key-pepper used to encode API keys for storing in DB. Use SecurityTest to compute a hash from an API key and the Pepper"
+export MOOCHO_API_KEY="api key to send with HTTP requests, NOT encoded"
