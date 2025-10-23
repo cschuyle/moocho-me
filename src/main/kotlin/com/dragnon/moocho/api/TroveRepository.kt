@@ -19,9 +19,11 @@ class TroveRepository(
 
     init {
         val data = getData()
-        for (trove in data.troves) {
-            val awsTrove = getTroveFromAws(trove)
-            repo[awsTrove.id] = awsTrove
+        if(data != null) {
+            for (trove in data.troves) {
+                val awsTrove = getTroveFromAws(trove)
+                repo[awsTrove.id] = awsTrove
+            }
         }
     }
 
@@ -37,14 +39,16 @@ class TroveRepository(
         return repo.values.toList()
     }
 
-    private fun getData(): MoochoDataRoot {
+    private fun getData(): MoochoDataRoot? {
         logger.info("Loading [bucket: ${bucketName}] Troves Catalog")
         val trovesObject = amazonS3Client.getObject(
             GetObjectRequest(
                 bucketName, "troves"
             )
         )
-        return objectMapper.readValue(trovesObject.objectContent)
+
+        val content = trovesObject?.objectContent ?: return null
+        return content.use { objectMapper.readValue<MoochoDataRoot>(it) }
     }
 
     private fun getTroveFromAws(troveDef: TroveDef): Trove {
