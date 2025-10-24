@@ -40,11 +40,11 @@ export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY
 # [Currently the prod DB is supplied as a heroku addon - log in and look for the prod creds]
 # The following are for the local DB (see ./database)
 
-# host=localhost
-# database='postgres'
-# user='postgres'
-# port=5432
-# password='password'
+host=localhost
+database='postgres'
+user='postgres'
+port=5432
+password='password'
 
 
 export SPRING_DATASOURCE_URL="jdbc:postgresql://$host/$database"
