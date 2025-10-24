@@ -1,143 +1,32 @@
-# Moocho Me
+# Moocho.me
 
-**Moocho Me** is a mess O data with some ability to browse it.
+### _For All Your Data_
 
-Actually, the data (except username and password):
-    - Is managed in <https://github.com/cschuyle/moocho> -- see that repo for details.
-    - It then makes its way into AWS S3 as JSON documents. That's why you need AWS credentials below.
+*Moocho.me* is a data navigator. 
 
-## Local Setup
+I'm building Moocho.me in order to help me in my quest to accumulate My Own Data.
 
-### Requirements
+I'm a packrat. Over decades, I've accumulated more and more lists of things. Some of these lists live in web sites that I subscribe to. Some, I curate myself. So, I wanted to solve two problems:
 
-#### Local dev
-- Java 21
-- Node.js v21.7.1
-- yarn v1.22.22 or npm
-- direnv helps
-#### Deploy
-- AWS account for S3
-- Postgres DB
-- Host for Java Spring apps. Currently use Heroku for hosting and Postgres DB
+- I want to be able to draw links between the things, and find duplicate and unique things in my lists of lists of things, and generall munge the data however I might want to.
 
-### Environment variables
+- I want to have third-party data under my own control, for two reasons:
 
-If you use `direnv`, copy `envrc-template` to `.envrc` and fill in the blanks.
+    - I want to slice it and dice it in combination with all my other data.
 
-If not using `direnv`, you can just fill in the blanks, copy the file to whatever you want, and source it.
+    - I don't want to wake up one day to find that one of my accounts (oh I dunno, maybe [MySpace](https://mashable.com/article/myspace-data-loss)?) has lost all my data.
 
-### Quickstart - local DB
+  So, I copy my own data into my own private system. I'ts all about Me. Moocho Me.
 
-_Caveat_: This is pretty rickety at the moment
+## The Now
 
-This only needs to be done once
-```bash
-# Create and start your local database
-database/start-local-db.sh
-```
+Currently there is a website and a CLI. They sit on a set of data formats, defined in my companion repo [Datagator](https://github.com/cschuyle/datagator). I host the data in AWS S3.
 
-In the backend window
-```bash
-## Kill any running server
-#kill $(ps gua|grep "moocho-me-web/gradle/wrapper/gradle-wrapper.jar org.gradle.wrapper.GradleWrapperMain bootRun"| awk '{print $2}')
+## The Future
 
-# Build and run the server
-gw bootRun
+Turbo-charge the search functionality to be more like an AI experience than a search one, when desired.
 
-# wait for server to actually start - TODO this should poll a healthcheck endpoint
-sleep 5
+Back it by a more appropriate set of data stores. Currently it's JSON documents in S3, and a Lucene index. A better set of tech would include relational and graphs stores, a document database, and a modern search engine.
 
-# login to the server (these are local-database creds)
-curl -d j_username=guest -d j_password=password -L http://localhost:8080/app/j_spring_security_check
-```
+Soup-up navigation using the UI: Hierarchies, faceting, link visualization, geography (maps).
 
-In the frontend window
-```bash
-# start the frontend
-cd frontend
-yarn start
-```
-
-### Add Heroku remote
-
-```bash
-git remote add heroku https://git.heroku.com/moocho-me-web.git
-```
-
-### Database
-
-#### Use the prod database - currently PostgreSQL on Heroku.
-
-OR
-
-#### Create a local database
-
-First time as a new user:
-
-You need to be the user who initially installed postgres on the machine.  Call that guy `psql-installer`.
-
-```console
-sudo -u psql-installer createuser -s $(whoami)
-sudo -u psql-installer createdb $(whoami)
-```
-
-Then run the migrations manually:
-```console
-psql
-\c MY_USERNAME
-Then, paste in the contents of the file in <./database>. If you think the file looks like a Flyway database migration file, you-re right - but we're not using Flyway currently.
-```
-
-Then, follow the **Adding users** section below, except do it in the local DB.
-
-#### Adding users
-
-To get the hashed password you can use [this site](https://bcrypt-generator.com).
-Choose the cipher length (number of rounds) to be 10
-
-Note that the DATABASE_URL env var is only used for the Heroku deployment.
-
-```console
-$ heroku config
-
-DATABASE_URL:   postgres://USER:PASSWORD@HOSTNAME:5432/DATABASE
-
-$ psql -h HOSTNAME -U USER -d DATABASE
-
-DATABASE=> insert into users (username, password, enabled) values ('your-username', '{bcrypt}<hashed password>
-', true);
-
-DATABASE=> insert into authorities (username, authority) values ('your-username', 'ROLE_ADMIN');
-```
-
-## Running
-
-Using two different terminal windows:
-
-Start the backend. Changes to the backend code require a re-compile and restart of the server.
-```shell
-chmod 0755 ./gradlew # Only necessary the first time, and only if you somehow got a copy without the executable bit set
-./gradlew bootRun
-```
-
-Start the frontend. Changes to the frontend code will automatically refresh.
-
-```console
-cd frontend
-yarn install # Only necessary the first time
-yarn start
-```
-
-To use the webapp UI, direct your browser to <http://localhost:3000/>.
-
-You can also hit the REST API directly at <http://localhost:8080/>.
-
-### Testing
-
-```console
-./gradlew test
-```
-
-## Deploying
-
-`deploy/heroku/deploy-heroku.sh` builds the production release (both the Spring app and the compiled React code) and instructs you to push to Heroku, who does all the rest of the work (buildpack to do Spring and Java, etc). See the README in the `deploy/heroku` directory.
