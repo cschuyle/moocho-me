@@ -43,7 +43,7 @@ data = get_json_data([
         '-H', f'X-API-KEY: {api_key}',
         '-s',
         '-v',  # silent mode
-        f'http://moocho.me/search?troves={args.troves}&query={quote(args.query)}&maxResults=3000'
+        f'http://moocho.me/search?troves={quote(args.troves)}&query={quote(args.query)}&maxResults=3000'
     ])
 
 # {
