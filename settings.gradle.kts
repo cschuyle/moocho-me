@@ -4,4 +4,4 @@ pluginManagement {
 	}
 }
 
-rootProject.name = "moocho-web"
+rootProject.name = "moocho-me-web"

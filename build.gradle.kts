@@ -1,10 +1,8 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    id("org.springframework.boot") version "3.3.1"
-    id("io.spring.dependency-management") version "1.1.5"
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.spring") version "1.9.24"
+    kotlin("jvm") version "1.9.25"
+    kotlin("plugin.spring") version "1.9.25"
+    id("org.springframework.boot") version "3.5.7"
+    id("io.spring.dependency-management") version "1.1.7"
     id("com.adarshr.test-logger") version "4.0.0"
 }
 
@@ -32,6 +30,10 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    // Springboot
+    // (I think starter-web includes this.)
+//    implementation("org.springframework.boot:spring-boot-starter")
+
     // Web, API
     implementation("org.springframework.boot:spring-boot-starter-web")
 
@@ -45,9 +47,6 @@ dependencies {
 
     // Security
     implementation("org.springframework.boot:spring-boot-starter-security")
-
-// TODO When this is actually deployed somewhere, cache the searchIndexes with time-expiration and test it.
-//    implementation("org.ehcache:ehcache:3.10.8")
 
     // Lucene
     implementation("org.apache.lucene:lucene-core:9.11.1")
@@ -79,18 +78,6 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-
-// Don't do this - it breaks the executable jar (results in main ClassNotFound).
-//    tasks.withType<Jar> {
-//        manifest {
-//            attributes["Main-Class"] = "com.example.ktskull.AppKt"
-//        }
-//    }
-
-// Use this instead of tasks,withType<Jar>
-//springBoot {
-//    mainClass.set("com.dragnon.moocho.api.AppKt")
-//}
 
 // Disable generation of plain jar - it confuses poor old Heroku unless you use a Procfile (override the startup command),
 // because Heroku uses build.libs/*.jar as its target for the java -jar command.
