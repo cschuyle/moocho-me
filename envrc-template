@@ -11,8 +11,8 @@ export AWS_REGION='us-west-2'
 export MOOCHO_BUCKET_NAME=moocho-test
 export ENABLE_SECURITY=false
 
-export AWS_ACCESS_KEY='AKIDOSARECOOL'
 export AWS_REGION='us-west-2'
+export AWS_ACCESS_KEY='AKIDOSARECOOL'
 export AWS_SECRET_KEY='blah/xyzzy'
 
 export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY
@@ -40,11 +40,19 @@ export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_KEY
 # [Currently the prod DB is supplied as a heroku addon - log in and look for the prod creds]
 # The following are for the local DB (see ./database)
 
-host=localhost
-database='postgres'
-user='postgres'
+## Local
+# host='localhost'
+# database='postgres'
+# user='postgres'
+# port=5432
+# password='password'
+
+## Remote
+host='psql_host'
+database='psql_database'
+user='psql_user'
 port=5432
-password='password'
+password='psql_password'
 
 
 export SPRING_DATASOURCE_URL="jdbc:postgresql://$host/$database"
