@@ -3,7 +3,6 @@ package com.dragnon.moocho.api
 import org.apache.lucene.index.DirectoryReader
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser
 import org.apache.lucene.search.IndexSearcher
-import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.ScoreDoc
 
 class DuplicateFinder(val troves: List<Trove>, val primaryTroveIds: List<String>, val secondaryTroveIds: List<String>) {
@@ -96,7 +95,7 @@ class DuplicateFinder(val troves: List<Trove>, val primaryTroveIds: List<String>
             }
             logger.info("Primary hit result count: ${primaryHits.size}")
 
-            val sortedHits = primaryHits.map { primaryHit ->
+            val enrichedHits = primaryHits.map { primaryHit ->
                 addSecondaryHits(
                     primaryHit,
                     secondaryTroveIds,
@@ -105,16 +104,26 @@ class DuplicateFinder(val troves: List<Trove>, val primaryTroveIds: List<String>
                     maxResults,
                     minDupScore,
                     maxDups
-                )
-            }
+                )}
                 .filter { it.secondaryHits.isNotEmpty() }
-                .sortedByDescending { it.score }
 
-            val maxScore = sortedHits.map { it.score }.maxOrNull()
+            val maxScore = enrichedHits.maxOfOrNull { it.score }
 
-            return sortedHits
-                .take(maxResults)
+            val boostedHits = enrichedHits.map {
+                val primaryTitle = it.primaryHit.title.lowercase().replace(Regex("\\W+"), " ")
+                val secondaryTitle = it.secondaryHits.first().title.lowercase().replace(Regex("\\W+"), " ")
+                val enrichedScore = if(primaryTitle == secondaryTitle) {
+                    it.score * 1.2
+                } else {
+                    it.score
+                }
+                SearchResult(it.primaryHit, it.secondaryHits, enrichedScore)
+            }
+
+            return boostedHits
                 .map { normalizeScore(it, maxScore!!) }
+                .sortedByDescending { it.score }
+                .take(maxResults)
         }
     }
 
@@ -294,12 +303,19 @@ class DuplicateFinder(val troves: List<Trove>, val primaryTroveIds: List<String>
             //   - Rank and display the possible-duplicates in
             //     - for each primary hit
             //     - the entire SearchResults (list of primary hits)
-            val compositeScore = if (secondaryHits.isEmpty()) 0.0 else secondaryHits.map { it.score }.maxOrNull()!!
+            val compositeScore = computeCompositeScore(primaryHit, secondaryHits)
             val searchResult = SearchResult(primaryHit, secondaryHits, compositeScore)
 
             logger.debug("Search Result: {}", searchResult)
 
             return searchResult
         }
+    }
+
+    private fun computeCompositeScore(primaryHit: ItemHit, secondaryHits: List<ItemHit>): Double {
+        if (secondaryHits.isEmpty()) {
+            return 0.0
+        }
+        return secondaryHits.maxOf { it.score }
     }
 }
